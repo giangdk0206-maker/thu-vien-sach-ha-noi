@@ -4,210 +4,295 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Thư Viện Sách Hà Nội</title>
+<meta name="description" content="Thư viện sách về Hà Nội – Vừa đọc vừa nghe, miễn phí">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
-    --red: #C0392B;
-    --red-light: #F5DEDD;
-  .cat-tabs {
-    display: flex; gap: 0; overflow-x: auto; scrollbar-width: none;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    --red: #C0392B; --red-light: #F5DEDD;
+    --gold: #B8860B; --gold-light: #F5F0E8;
+    --ink: #1A1A1A; --ink-mid: #555; --ink-soft: #888;
+    --bg: #FAFAF8; --card: #FFFFFF; --border: #E8E4DC;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-hover: 0 8px 28px rgba(0,0,0,0.13);
   }
-  .cat-tabs::-webkit-scrollbar { display: none; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Be Vietnam Pro',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
+
+  /* ── HEADER ── */
+  .header { background:var(--ink); color:white; padding:16px 16px 0; position:sticky; top:0; z-index:100; }
+  .header-top { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .logo-icon { font-size:22px; }
+  .logo-text { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; }
+  .logo-sub { font-size:11px; color:#aaa; margin-top:1px; letter-spacing:.5px; text-transform:uppercase; }
+
+  /* QR trang chủ – nút nhỏ trên header */
+  .qr-site-btn {
+    margin-left:auto; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+    border-radius:8px; padding:6px 10px; color:white; font-size:12px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap;
+    font-family:inherit; transition:background .2s;
+  }
+  .qr-site-btn:hover { background:rgba(255,255,255,0.22); }
+
+  .search-bar {
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+    border-radius:10px; display:flex; align-items:center; gap:8px;
+    padding:10px 14px; margin-bottom:14px;
+  }
+  .search-bar input { background:none; border:none; outline:none; color:white; font-family:inherit; font-size:14px; flex:1; }
+  .search-bar input::placeholder { color:rgba(255,255,255,0.4); }
+
+  .cat-tabs { display:flex; overflow-x:auto; scrollbar-width:none; border-top:1px solid rgba(255,255,255,0.08); }
+  .cat-tabs::-webkit-scrollbar { display:none; }
   .cat-tab {
-    flex-shrink: 0; padding: 11px 14px;
-    font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.5);
-    cursor: pointer; border-bottom: 2px solid transparent;
-    transition: all 0.2s; white-space: nowrap;
-    background: none; border-top: none; border-left: none; border-right: none;
-    font-family: inherit;
+    flex-shrink:0; padding:11px 14px; font-size:12.5px; font-weight:500;
+    color:rgba(255,255,255,0.5); cursor:pointer; border-bottom:2px solid transparent;
+    transition:all .2s; white-space:nowrap; background:none;
+    border-top:none; border-left:none; border-right:none; font-family:inherit;
   }
-  .cat-tab.active { color: white; border-bottom-color: var(--red); }
-  .cat-tab:hover { color: rgba(255,255,255,0.85); }
+  .cat-tab.active { color:white; border-bottom-color:var(--red); }
+  .cat-tab:hover { color:rgba(255,255,255,0.85); }
 
-  .main { padding: 20px 16px 80px; max-width: 680px; margin: 0 auto; }
+  /* ── MAIN ── */
+  .main { padding:20px 16px 80px; max-width:680px; margin:0 auto; }
+  .section-title { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .section-title h2 { font-size:16px; font-weight:700; }
+  .count { background:var(--red-light); color:var(--red); font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
 
-  .section-title {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 14px; margin-top: 4px;
+  /* ── BOOK CARD ── */
+  .book-list { display:flex; flex-direction:column; gap:10px; }
+  .book-card {
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    border:1px solid var(--border); padding:14px; display:flex; gap:12px; cursor:pointer;
+    transition:box-shadow .2s, transform .2s;
   }
-  .section-title h2 { font-size: 16px; font-weight: 700; color: var(--ink); }
-  .section-title .count {
-    background: var(--red-light); color: var(--red);
-    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+  .book-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-1px); }
+  .book-cover {
+    width:56px; height:76px; border-radius:6px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:22px;
+    position:relative; overflow:hidden;
   }
+  .book-cover::after { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:rgba(0,0,0,0.15); }
+  .book-info { flex:1; min-width:0; }
+  .book-cat { font-size:11px; color:var(--red); font-weight:500; margin-bottom:4px; text-transform:uppercase; letter-spacing:.4px; }
+  .book-title { font-size:14px; font-weight:600; line-height:1.35; margin-bottom:4px; }
+  .book-desc { font-size:12.5px; color:var(--ink-soft); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .book-meta { display:flex; align-items:center; gap:8px; margin-top:7px; }
+  .audio-badge { background:var(--gold-light); color:var(--gold); font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+  .fav-btn { margin-left:auto; background:none; border:none; font-size:16px; cursor:pointer; opacity:.3; transition:opacity .2s, transform .15s; }
+  .fav-btn.active { opacity:1; }
+  .fav-btn:hover { transform:scale(1.2); }
 
-  .empty { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
-  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
-  .empty p { font-size: 14px; }
+  .empty { text-align:center; padding:60px 20px; color:var(--ink-soft); }
+  .empty-icon { font-size:48px; margin-bottom:12px; opacity:.3; }
 
-  /* MODAL */
+  /* ── MODAL SÁCH ── */
   .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-    z-index: 200; display: none; align-items: flex-end;
-    backdrop-filter: blur(4px);
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200;
+    display:none; align-items:flex-end; backdrop-filter:blur(4px);
   }
-  .modal-overlay.open { display: flex; }
+  .modal-overlay.open { display:flex; }
   .modal {
-    background: var(--card); border-radius: 20px 20px 0 0;
-    width: 100%; max-height: 92vh; overflow-y: auto;
-    padding: 0 0 40px;
-    animation: slideUp 0.3s ease;
-    position: relative;
+    background:var(--card); border-radius:20px 20px 0 0; width:100%;
+    max-height:92vh; overflow-y:auto; padding:0 0 40px;
+    animation:slideUp .3s ease; position:relative;
   }
-  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .modal-handle {
-    width: 40px; height: 4px; background: #ddd; border-radius: 2px;
-    margin: 12px auto 0;
-  }
-  .modal-header { padding: 16px 16px 0; }
-  .modal-cat { font-size: 11px; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-  .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--ink); margin-bottom: 12px; }
-  .modal-cover-row {
-    display: flex; gap: 14px; align-items: flex-start;
-    padding: 0 16px 16px; border-bottom: 1px solid var(--border);
-  }
-  .modal-cover {
-    width: 80px; height: 108px; border-radius: 8px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; font-size: 32px;
-    position: relative; overflow: hidden; box-shadow: 4px 4px 16px rgba(0,0,0,0.15);
-  }
-  .modal-cover::after {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-    background: rgba(0,0,0,0.15);
-  }
-  .modal-quick-info { flex: 1; }
-  .modal-quick-info p { font-size: 13px; color: var(--ink-mid); line-height: 1.6; margin-bottom: 8px; }
-
-  /* BOOK META INFO */
-  .book-meta-info {
-    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
-  }
-  .meta-tag {
-    background: var(--bg); border: 1px solid var(--border);
-    font-size: 11px; color: var(--ink-mid); padding: 3px 8px;
-    border-radius: 6px; display: flex; align-items: center; gap: 4px;
-  }
-
-  /* AUDIO PLAYER */
-  .audio-section {
-    margin: 14px 16px; background: var(--ink); border-radius: 12px; padding: 14px; color: white;
-  }
-  .audio-title { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .audio-controls { display: flex; align-items: center; gap: 12px; }
-  .play-btn {
-    width: 44px; height: 44px; border-radius: 50%; background: var(--red);
-    border: none; color: white; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: transform 0.15s, background 0.15s;
-  }
-  .play-btn:hover { transform: scale(1.07); background: #a93226; }
-  .audio-info { flex: 1; }
-  .audio-progress {
-    height: 3px; background: rgba(255,255,255,0.15); border-radius: 2px; margin-bottom: 6px; overflow: hidden;
-  }
-  .audio-progress-fill { height: 100%; background: var(--red); width: 0%; border-radius: 2px; transition: width 0.3s; }
-  .audio-time { font-size: 11px; color: rgba(255,255,255,0.4); }
-  .audio-note { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 8px; line-height: 1.5; }
-
-  /* QR SECTION */
-  .qr-section {
-    margin: 0 16px 14px;
-    background: linear-gradient(135deg, var(--gold-light), #FFF9F0);
-    border: 1px solid #E8D5A3;
-    border-radius: 12px; padding: 14px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .qr-box {
-    width: 80px; height: 80px; flex-shrink: 0;
-    background: white; border-radius: 8px; padding: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .qr-box canvas, .qr-box img { width: 72px !important; height: 72px !important; }
-  .qr-info { flex: 1; }
-  .qr-title { font-size: 12px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-  .qr-desc { font-size: 12px; color: var(--ink-mid); line-height: 1.5; }
-  .qr-url { font-size: 10px; color: var(--ink-soft); margin-top: 4px; word-break: break-all; }
-
-  /* CONTENT */
-  .content-section { padding: 0 16px; }
-  .content-label {
-    font-size: 12px; color: var(--ink-soft); text-transform: uppercase;
-    letter-spacing: 0.6px; font-weight: 600; margin-bottom: 10px; margin-top: 16px;
-  }
-  .content-text { font-size: 13.5px; color: var(--ink-mid); line-height: 1.85; }
-  .content-text p { margin-bottom: 14px; }
-  .content-text strong { color: var(--ink); font-weight: 600; }
-
-  /* HIGHLIGHTS BOX */
-  .highlights-box {
-    background: var(--red-light); border-left: 3px solid var(--red);
-    border-radius: 0 8px 8px 0; padding: 12px 14px; margin-bottom: 14px;
-    font-size: 13px; color: var(--ink-mid); line-height: 1.7;
-  }
-  .highlights-box .hl-title {
-    font-size: 11px; font-weight: 700; color: var(--red);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
-  }
-  .highlights-box ul { padding-left: 16px; }
-  .highlights-box li { margin-bottom: 4px; }
-
-  /* MODAL ACTIONS */
-  .modal-actions { display: flex; gap: 8px; padding: 16px; margin-top: 4px; }
-  .action-btn {
-    flex: 1; padding: 11px; border-radius: 10px; border: 1.5px solid var(--border);
-    background: none; font-family: inherit; font-size: 13px; font-weight: 500;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-    color: var(--ink-mid); transition: all 0.15s;
-  }
-  .action-btn:hover { background: var(--red-light); border-color: var(--red); color: var(--red); }
-  .action-btn.fav-active { background: var(--red-light); border-color: var(--red); color: var(--red); }
-
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .modal-handle { width:40px; height:4px; background:#ddd; border-radius:2px; margin:12px auto 0; }
   .close-btn {
-    position: absolute; top: 12px; right: 12px;
-    width: 32px; height: 32px; border-radius: 50%; background: var(--border);
-    border: none; font-size: 16px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; color: var(--ink-mid);
-    z-index: 10;
+    position:absolute; top:12px; right:12px; width:32px; height:32px;
+    border-radius:50%; background:var(--border); border:none; font-size:16px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--ink-mid); z-index:10;
   }
+  .modal-header { padding:16px 16px 0; }
+  .modal-cat { font-size:11px; color:var(--red); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .modal-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; line-height:1.3; margin-bottom:12px; }
+  .modal-cover-row { display:flex; gap:14px; align-items:flex-start; padding:0 16px 16px; border-bottom:1px solid var(--border); }
+  .modal-cover {
+    width:80px; height:108px; border-radius:8px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:32px;
+    position:relative; overflow:hidden; box-shadow:4px 4px 16px rgba(0,0,0,0.15);
+  }
+  .modal-cover::after { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:rgba(0,0,0,0.15); }
+  .modal-quick-info p { font-size:13px; color:var(--ink-mid); line-height:1.6; margin-bottom:8px; }
+  .book-meta-info { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .meta-tag { background:var(--bg); border:1px solid var(--border); font-size:11px; color:var(--ink-mid); padding:3px 8px; border-radius:6px; }
 
-  /* DIVIDER */
-  .section-divider {
-    height: 1px; background: var(--border); margin: 4px 16px 14px;
-button>
+  /* ── AUDIO PLAYER ── */
+  .audio-section { margin:14px 16px; background:var(--ink); border-radius:12px; padding:14px; color:white; }
+  .audio-label { font-size:12px; color:rgba(255,255,255,0.5); margin-bottom:4px; text-transform:uppercase; letter-spacing:.5px; }
+  .music-selector { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .music-btn {
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+    border-radius:6px; padding:4px 10px; font-size:11px; color:rgba(255,255,255,0.7);
+    cursor:pointer; font-family:inherit; transition:all .15s; white-space:nowrap;
+  }
+  .music-btn.active { background:var(--red); border-color:var(--red); color:white; }
+  .music-btn:hover { background:rgba(255,255,255,0.18); }
+  .audio-controls { display:flex; align-items:center; gap:12px; }
+  .play-btn {
+    width:44px; height:44px; border-radius:50%; background:var(--red); border:none;
+    color:white; font-size:18px; cursor:pointer; display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; transition:transform .15s, background .15s;
+  }
+  .play-btn:hover { transform:scale(1.07); background:#a93226; }
+  .audio-info { flex:1; }
+  .audio-progress { height:3px; background:rgba(255,255,255,0.15); border-radius:2px; margin-bottom:6px; overflow:hidden; cursor:pointer; }
+  .audio-progress-fill { height:100%; background:var(--red); width:0%; border-radius:2px; transition:width .5s linear; }
+  .audio-time { font-size:11px; color:rgba(255,255,255,0.4); }
+  .audio-note { font-size:11px; color:rgba(255,255,255,0.3); margin-top:8px; line-height:1.5; }
+  .now-playing { font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:8px; font-style:italic; }
+
+  /* ── QR CHI TIẾT SÁCH ── */
+  .qr-section {
+    margin:0 16px 14px; background:linear-gradient(135deg,var(--gold-light),#FFF9F0);
+    border:1px solid #E8D5A3; border-radius:12px; padding:14px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .qr-box { width:80px; height:80px; flex-shrink:0; background:white; border-radius:8px; padding:4px; box-shadow:0 2px 8px rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; }
+  .qr-box canvas, .qr-box img { width:72px!important; height:72px!important; }
+  .qr-info { flex:1; }
+  .qr-title { font-size:12px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px; }
+  .qr-desc { font-size:12px; color:var(--ink-mid); line-height:1.5; }
+  .qr-url { font-size:10px; color:var(--ink-soft); margin-top:4px; word-break:break-all; }
+
+  /* ── CONTENT ── */
+  .content-section { padding:0 16px; }
+  .content-label { font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.6px; font-weight:600; margin-bottom:10px; margin-top:16px; }
+  .content-text { font-size:13.5px; color:var(--ink-mid); line-height:1.85; }
+  .content-text p { margin-bottom:14px; }
+  .content-text strong { color:var(--ink); font-weight:600; }
+  .highlights-box { background:var(--red-light); border-left:3px solid var(--red); border-radius:0 8px 8px 0; padding:12px 14px; margin-bottom:14px; font-size:13px; color:var(--ink-mid); line-height:1.7; }
+  .highlights-box .hl-title { font-size:11px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+  .highlights-box ul { padding-left:16px; }
+  .highlights-box li { margin-bottom:4px; }
+  .section-divider { height:1px; background:var(--border); margin:4px 16px 14px; }
+
+  /* ── MODAL ACTIONS ── */
+  .modal-actions { display:flex; gap:8px; padding:16px; margin-top:4px; }
+  .action-btn {
+    flex:1; padding:11px; border-radius:10px; border:1.5px solid var(--border);
+    background:none; font-family:inherit; font-size:13px; font-weight:500;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+    color:var(--ink-mid); transition:all .15s;
+  }
+  .action-btn:hover { background:var(--red-light); border-color:var(--red); color:var(--red); }
+  .action-btn.fav-active { background:var(--red-light); border-color:var(--red); color:var(--red); }
+
+  /* ── POPUP QR TRANG CHỦ ── */
+  .site-qr-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:400;
+    display:none; align-items:center; justify-content:center; backdrop-filter:blur(6px);
+  }
+  .site-qr-overlay.open { display:flex; }
+  .site-qr-popup {
+    background:white; border-radius:20px; padding:28px 24px; max-width:320px; width:90%;
+    text-align:center; animation:popIn .25s ease;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  @keyframes popIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+  .site-qr-popup h3 { font-family:'Playfair Display',serif; font-size:20px; margin-bottom:6px; color:var(--ink); }
+  .site-qr-popup p { font-size:13px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5; }
+  .site-qr-frame { background:var(--bg); border-radius:16px; padding:16px; margin:0 auto 16px; display:inline-block; border:2px solid var(--border); }
+  .site-qr-frame canvas, .site-qr-frame img { width:180px!important; height:180px!important; display:block; }
+  .site-qr-url { font-size:11px; color:var(--ink-soft); word-break:break-all; background:var(--bg); padding:8px 12px; border-radius:8px; margin-bottom:16px; text-align:left; }
+  .site-qr-close { width:100%; padding:12px; border-radius:10px; background:var(--ink); color:white; border:none; font-family:inherit; font-size:14px; font-weight:600; cursor:pointer; }
+  .site-qr-close:hover { background:#333; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo-icon">📚</div>
+    <div>
+      <div class="logo-text">Thư Viện Sách Hà Nội</div>
+      <div class="logo-sub">Vừa Đọc · Vừa Nghe · Miễn Phí</div>
+    </div>
+    <button class="qr-site-btn" onclick="openSiteQR()">📱 QR Trang Web</button>
+  </div>
+  <div class="search-bar">
+    <span style="font-size:16px;opacity:.5">🔍</span>
+    <input type="text" id="searchInput" placeholder="Tìm tên sách, tác giả...">
+  </div>
+  <div class="cat-tabs" id="catTabs"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="section-title">
+    <h2 id="sectionTitle">Tất cả sách</h2>
+    <span class="count" id="bookCount">0 cuốn</span>
+  </div>
+  <div class="book-list" id="bookList"></div>
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="empty-icon">📭</div>
+    <p>Không tìm thấy sách nào</p>
+  </div>
+</div>
+
+<!-- POPUP QR TRANG WEB -->
+<div class="site-qr-overlay" id="siteQrOverlay" onclick="closeSiteQR(event)">
+  <div class="site-qr-popup">
+    <h3>📱 Chia Sẻ Thư Viện</h3>
+    <p>Quét mã QR để mở thư viện trên điện thoại<br>hoặc chia sẻ với bạn bè</p>
+    <div class="site-qr-frame" id="siteQrBox"></div>
+    <div class="site-qr-url" id="siteQrUrl"></div>
+    <button class="site-qr-close" onclick="closeSiteQRBtn()">✕ Đóng</button>
+  </div>
+</div>
+
+<!-- MODAL CHI TIẾT SÁCH -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <button class="close-btn" onclick="closeModalBtn()">✕</button>
+    <div class="modal-header">
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-title" id="mTitle"></div>
+    </div>
+    <div class="modal-cover-row">
+      <div class="modal-cover" id="mCover"></div>
+      <div class="modal-quick-info">
+        <p id="mQuick"></p>
         <div class="book-meta-info" id="mMeta"></div>
       </div>
     </div>
 
-    <!-- AUDIO -->
+    <!-- NHẠC NỀN -->
     <div class="audio-section">
-      <div class="audio-title">🎵 Nghe Sách</div>
+      <div class="audio-label">🎵 Nhạc Nền Thư Giãn (Miễn Phí)</div>
+      <div class="music-selector" id="musicSelector"></div>
+      <div class="now-playing" id="nowPlaying">Chọn bản nhạc bên trên ↑</div>
       <div class="audio-controls">
         <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
         <div class="audio-info">
-          <div class="audio-progress"><div class="audio-progress-fill" id="progressFill"></div></div>
-          <div class="audio-time" id="audioTime">Chạm ▶ để nghe thử</div>
+          <div class="audio-progress" id="audioProgressBar" onclick="seekAudio(event)">
+            <div class="audio-progress-fill" id="progressFill"></div>
+          </div>
+          <div class="audio-time" id="audioTime">--:-- / --:--</div>
         </div>
       </div>
-      <div class="audio-note">💡 Để nghe đầy đủ: tải file MP3 lên Google Drive → dán link vào đây.</div>
+      <div class="audio-note">💡 File audio sách sẽ hiện ở đây sau khi bạn upload lên Google Drive và dán link vào.</div>
+      <audio id="audioEl" preload="none" style="display:none"></audio>
     </div>
 
-    <!-- QR CODE -->
+    <!-- QR TỪNG SÁCH -->
     <div class="qr-section">
       <div class="qr-box" id="qrContainer"></div>
       <div class="qr-info">
-        <div class="qr-title">📱 Mã QR – Chia Sẻ Sách</div>
-        <div class="qr-desc">Quét mã để mở trang thư viện trên điện thoại hoặc chia sẻ với bạn bè.</div>
+        <div class="qr-title">📱 QR – Chia Sẻ Sách Này</div>
+        <div class="qr-desc">Quét để mở trang này trên điện thoại hoặc gửi cho bạn bè.</div>
         <div class="qr-url" id="qrUrl"></div>
       </div>
     </div>
 
     <div class="section-divider"></div>
 
-    <!-- CONTENT -->
     <div class="content-section">
       <div class="content-label">📖 Nội Dung Tóm Tắt Chi Tiết</div>
       <div id="mHighlights"></div>
@@ -222,534 +307,473 @@ button>
 </div>
 
 <script>
+// ══════════════════════════════════════════════
+//  NHẠC NỀN MIỄN PHÍ (CC / Public Domain)
+//  Nguồn: Internet Archive, Wikimedia Commons, Free Music Archive
+//  Tất cả đều là Public Domain hoặc CC0/CC-BY
+// ══════════════════════════════════════════════
+const MUSIC_TRACKS = [
+  {
+    id: 'm1',
+    label: '🎹 Piano nhẹ nhàng',
+    // Erik Satie - Gymnopédie No.1 | Public Domain recording
+    url: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Gymnopedie_No._1.ogg',
+    name: 'Gymnopédie No.1 – Erik Satie (Public Domain)'
+  },
+  {
+    id: 'm2',
+    label: '🎻 Cổ điển êm dịu',
+    // Bach - Air on G String | Public Domain recording from Musopen
+    url: 'https://upload.wikimedia.org/wikipedia/commons/5/51/BWV_1068_Air.ogg',
+    name: 'Air on G String – J.S. Bach (Public Domain)'
+  },
+  {
+    id: 'm3',
+    label: '🪈 Sáo tre thiền',
+    // Debussy - Clair de Lune | Public Domain
+    url: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Debussy_-_Clair_de_Lune.ogg',
+    name: 'Clair de Lune – Debussy (Public Domain)'
+  },
+  {
+    id: 'm4',
+    label: '🎸 Acoustic mộc',
+    // Chopin - Nocturne | Public Domain
+    url: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Chopin-Nocturne_Op9_No2_Ivo_Pogorelich.ogg',
+    name: 'Nocturne Op.9 No.2 – Chopin (Public Domain)'
+  },
+  {
+    id: 'm5',
+    label: '🌿 Thiên nhiên',
+    // Beethoven - Moonlight Sonata | Public Domain
+    url: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/Beethoven_moonlight_sonata.ogg',
+    name: 'Moonlight Sonata – Beethoven (Public Domain)'
+  }
+];
+
+// ══════════════════════════════════════════════
+//  DỮ LIỆU SÁCH
+// ══════════════════════════════════════════════
 const BOOKS = [
   // ── I. LỊCH SỬ ──
   {
-    id: 1, cat: "Lịch Sử", emoji: "🏛️",
-    color: "#C0392B", bg: "#FDECEA",
-    title: "Vang Bóng Một Thời",
-    author: "Nguyễn Tuân", year: "1940", pages: "180 trang",
-    quick: "Tập truyện ngắn đặc sắc về những thú chơi tao nhã của người xưa",
-    desc: "Bức tranh hoài cổ về những nét đẹp văn hóa của người Việt xưa qua ngòi bút tài hoa Nguyễn Tuân.",
-    highlights: ["Tác phẩm đỉnh cao của văn xuôi lãng mạn Việt Nam", "Khắc họa 13 truyện về phong tục, thú vui tao nhã", "Ngôn ngữ giàu nhạc điệu, hình ảnh tinh tế"],
-    content: `<p><strong>Tổng quan:</strong> "Vang Bóng Một Thời" là tập truyện ngắn xuất bản năm 1940, được coi là đỉnh cao trong sự nghiệp văn học của Nguyễn Tuân và là một trong những tác phẩm văn xuôi Việt Nam đẹp nhất thế kỷ 20.</p>
-    <p><strong>Nội dung 13 truyện:</strong> Mỗi truyện là một bức tranh sinh động về thú chơi, phong tục của người xưa: uống trà, thưởng hương, chơi chữ, thả thơ, đánh thơ, chọi gà... Tất cả đều mang vẻ đẹp tao nhã, tinh tế của người Hà Nội thời trước.</p>
-    <p><strong>Nhân vật đặc sắc:</strong> Huấn Cao trong "Chữ người tử tù" – người tử tù viết chữ đẹp như rồng bay phượng múa, sáng tác tác phẩm thư pháp cuối đời ngay trong ngục tối – là hình ảnh bất hủ về cái đẹp thuần khiết không bị khuất phục trước cường quyền.</p>
-    <p><strong>Thú uống trà:</strong> Trong "Những chiếc ấm đất", Nguyễn Tuân mô tả nghệ thuật pha trà cổ truyền: nước giếng Hoa Nam, ấm Thế Đức, chén Thanh Hóa – một triết lý sống chậm, thưởng thức trọn vẹn từng khoảnh khắc.</p>
-    <p><strong>Ngôn ngữ:</strong> Văn Nguyễn Tuân giàu từ Hán Việt, dùng nhiều điển tích, hình ảnh ước lệ nhưng lại rất sống động và chính xác – phong cách "tài tử ngông nghênh" độc đáo không ai bắt chước được.</p>
-    <p><strong>Giá trị:</strong> Cuốn sách không chỉ là văn học mà còn là tư liệu văn hóa quý về những phong tục đẹp đang dần mai một của người Việt xưa.</p>`
+    id:1, cat:"Lịch Sử", emoji:"📜", color:"#C0392B", bg:"#FDECEA",
+    title:"Vang Bóng Một Thời", author:"Nguyễn Tuân", year:"1940", pages:"180 trang",
+    quick:"Tập truyện về những thú chơi tao nhã của người xưa",
+    desc:"Bức tranh hoài cổ về nét đẹp văn hóa người Việt xưa qua ngòi bút tài hoa Nguyễn Tuân.",
+    highlights:["Đỉnh cao văn xuôi lãng mạn Việt Nam","13 truyện về phong tục, thú vui tao nhã","Ngôn ngữ giàu nhạc điệu, tinh tế"],
+    content:`<p><strong>Tổng quan:</strong> "Vang Bóng Một Thời" (1940) được coi là đỉnh cao trong sự nghiệp Nguyễn Tuân và là một trong những tác phẩm văn xuôi Việt Nam đẹp nhất thế kỷ 20.</p><p><strong>Nội dung 13 truyện:</strong> Mỗi truyện là một bức tranh về thú chơi người xưa: uống trà, thưởng hương, chơi chữ, thả thơ, đánh thơ, chọi gà... Tất cả mang vẻ đẹp tao nhã của người Hà Nội thời trước.</p><p><strong>Nhân vật bất hủ:</strong> Huấn Cao trong "Chữ người tử tù" – người tử tù viết chữ đẹp như rồng bay phượng múa, sáng tác thư pháp cuối đời ngay trong ngục tối – hình ảnh bất hủ về cái đẹp thuần khiết không khuất phục trước cường quyền.</p><p><strong>Thú uống trà:</strong> "Những chiếc ấm đất" mô tả nghệ thuật pha trà cổ truyền: nước giếng Hoa Nam, ấm Thế Đức, chén Thanh Hóa – triết lý sống chậm, thưởng thức trọn vẹn từng khoảnh khắc.</p><p><strong>Giá trị:</strong> Không chỉ là văn học mà còn là tư liệu văn hóa quý về những phong tục đẹp đang dần mai một của người Việt xưa.</p>`
   },
   {
-    id: 2, cat: "Lịch Sử", emoji: "🏛️",
-    color: "#C0392B", bg: "#FDECEA",
-    title: "Thăng Long – Hà Nội Ngàn Năm Văn Hiến",
-    author: "Nhiều tác giả", year: "2010", pages: "420 trang",
-    quick: "Công trình nghiên cứu lịch sử về kinh đô nghìn tuổi",
-    desc: "Cái nhìn toàn cảnh về hành trình 1.000 năm của mảnh đất Thăng Long từ thuở khai thiên lập địa đến Hà Nội hiện đại.",
-    highlights: ["Bản đồ cổ và hình ảnh di tích phong phú", "Phân tích lịch sử qua các triều đại Lý, Trần, Lê, Nguyễn", "Nguồn tư liệu học giả Pháp thời thuộc địa"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách là công trình nghiên cứu công phu, tập hợp nhiều bài viết chuyên sâu về lịch sử hình thành và phát triển của vùng đất Thăng Long – Hà Nội suốt chiều dài ngàn năm.</p>
-    <p><strong>Dời đô năm 1010:</strong> Vua Lý Thái Tổ nhìn thấy rồng vàng bay lên từ vùng đất Đại La – điềm lành khiến ông quyết định dời đô từ Hoa Lư ra đây, đặt tên là Thăng Long (rồng bay lên). Quyết định lịch sử này định hình hơn 1.000 năm phát triển của dân tộc.</p>
-    <p><strong>Qua các triều đại:</strong> Từ kinh thành nhỏ bé thời Lý đến đại đô hội thời Lê sơ với 36 phố phường sầm uất – mỗi triều đại để lại dấu ấn kiến trúc và văn hóa riêng trên mảnh đất thiêng.</p>
-    <p><strong>Thời Pháp thuộc:</strong> Hà Nội biến đổi drastic từ 1883 – đường phố Âu hóa, công trình Pháp mọc lên, nhưng 36 phố phường vẫn giữ được nhịp sống truyền thống.</p>
-    <p><strong>Tư liệu quý hiếm:</strong> Sách bao gồm bản đồ cổ từ thế kỷ 15-19, hình ảnh di tích, và những ghi chép của các học giả người Pháp thời thuộc địa – nguồn tư liệu quý giúp người đọc hình dung Hà Nội của các thế kỷ trước.</p>
-    <p><strong>Giá trị:</strong> Đây là tài liệu tham khảo không thể thiếu cho ai muốn hiểu sâu về bản sắc văn hóa và địa chính trị của thủ đô Việt Nam.</p>`
+    id:2, cat:"Lịch Sử", emoji:"🏛️", color:"#C0392B", bg:"#FDECEA",
+    title:"Thăng Long – Hà Nội Ngàn Năm Văn Hiến", author:"Nhiều tác giả", year:"2010", pages:"420 trang",
+    quick:"Công trình nghiên cứu lịch sử về kinh đô nghìn tuổi",
+    desc:"Cái nhìn toàn cảnh về hành trình 1.000 năm của mảnh đất Thăng Long từ thuở khai thiên lập địa đến Hà Nội hiện đại.",
+    highlights:["Bản đồ cổ và hình ảnh di tích phong phú","Phân tích lịch sử qua triều đại Lý, Trần, Lê, Nguyễn","Tư liệu học giả Pháp thời thuộc địa quý hiếm"],
+    content:`<p><strong>Tổng quan:</strong> Công trình nghiên cứu công phu, tập hợp nhiều bài viết chuyên sâu về lịch sử hình thành và phát triển của Thăng Long – Hà Nội suốt chiều dài ngàn năm.</p><p><strong>Dời đô năm 1010:</strong> Vua Lý Thái Tổ thấy rồng vàng bay lên từ Đại La – quyết định dời đô ra đây, đặt tên Thăng Long (rồng bay lên). Quyết định lịch sử này định hình hơn 1.000 năm phát triển dân tộc.</p><p><strong>Qua các triều đại:</strong> Từ kinh thành nhỏ bé thời Lý đến đại đô hội thời Lê sơ với 36 phố phường sầm uất – mỗi triều đại để lại dấu ấn kiến trúc và văn hóa riêng.</p><p><strong>Thời Pháp thuộc:</strong> Hà Nội biến đổi mạnh từ 1883 – đường phố Âu hóa, công trình Pháp mọc lên, nhưng 36 phố phường vẫn giữ được nhịp sống truyền thống.</p><p><strong>Tư liệu quý:</strong> Bản đồ cổ từ thế kỷ 15-19, hình ảnh di tích, ghi chép của học giả Pháp thời thuộc địa – nguồn tư liệu quý giúp hình dung Hà Nội các thế kỷ trước.</p>`
   },
   {
-    id: 3, cat: "Lịch Sử", emoji: "🏙️",
-    color: "#C0392B", bg: "#FDECEA",
-    title: "Hà Nội Thời Cận Đại",
-    author: "Nguyễn Thừa Hỷ", year: "2012", pages: "350 trang",
-    quick: "Biến đổi đô thị Hà Nội từ 1873 đến 1954",
-    desc: "Nghiên cứu toàn diện về quá trình đô thị hóa và Âu hóa của Hà Nội dưới thời Pháp thuộc – từ kinh thành phong kiến đến thành phố thuộc địa hiện đại.",
-    highlights: ["Quy hoạch đô thị kiểu Pháp thế kỷ 19-20", "Hệ thống công trình Pháp còn tồn tại đến nay", "Đời sống kinh tế – xã hội thời thuộc địa"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách lấp đầy khoảng trống trong lịch sử Hà Nội – giai đoạn từ khi Pháp chiếm Hà Nội (1873) đến chiến thắng Điện Biên Phủ (1954), một thời kỳ biến đổi sâu sắc và phức tạp nhất của thành phố.</p>
-    <p><strong>Quy hoạch Pháp:</strong> Sau khi chiếm đóng, người Pháp triển khai kế hoạch quy hoạch lại Hà Nội theo kiểu Âu châu – phá bỏ nhiều công trình cổ, xây dựng hệ thống đường thẳng, công trình hành chính, nhà ga, bệnh viện. Những con phố như Tràng Tiền, Đinh Tiên Hoàng hình thành từ thời kỳ này.</p>
-    <p><strong>Những công trình mang tính biểu tượng:</strong> Nhà hát lớn (1911), Phủ Toàn Quyền (1906), Nhà thờ Lớn (1886), cầu Long Biên (1902) – tất cả đều được phân tích về lịch sử xây dựng và ý nghĩa kiến trúc.</p>
-    <p><strong>Xã hội hai tầng:</strong> Sự phân tách giữa khu phố Tây (Hoàn Kiếm) và phố Ta (36 phố phường) tạo ra một Hà Nội hai tốc độ – một bên hiện đại hóa nhanh chóng, một bên vẫn giữ nhịp sống truyền thống.</p>
-    <p><strong>Phong trào yêu nước:</strong> Bối cảnh thuộc địa cũng là nơi nảy sinh các phong trào Đông Kinh Nghĩa Thục, Đông Du, và sau này là Việt Minh – Hà Nội là trái tim của phong trào giải phóng dân tộc.</p>
-    <p><strong>Giá trị thực tiễn:</strong> Hiểu lịch sử cận đại giúp người đọc lý giải được tại sao Hà Nội có cấu trúc đô thị như hiện nay – sự chồng chéo giữa không gian truyền thống và di sản thuộc địa.</p>`
+    id:3, cat:"Lịch Sử", emoji:"📔", color:"#C0392B", bg:"#FDECEA",
+    title:"Búp Sen Xanh", author:"Sơn Tùng", year:"1982", pages:"340 trang",
+    quick:"Tiểu thuyết lịch sử về tuổi thơ Bác Hồ",
+    desc:"Tiểu thuyết tái hiện những năm tháng thiếu thời của Nguyễn Sinh Cung – người sau này trở thành Chủ tịch Hồ Chí Minh.",
+    highlights:["Nghiên cứu điền dã nhiều năm của tác giả","Bức tranh xã hội Việt Nam cuối thế kỷ 19","Hành trình từ làng Sen đến Huế và Nam Bộ"],
+    content:`<p><strong>Tổng quan:</strong> "Búp Sen Xanh" của Sơn Tùng (1982) là tiểu thuyết lịch sử nổi tiếng nhất về thời thơ ấu và thanh niên của Chủ tịch Hồ Chí Minh – được tái bản hàng chục lần và dịch ra nhiều thứ tiếng.</p><p><strong>Ý nghĩa tên sách:</strong> "Búp sen xanh" là ẩn dụ về cậu bé Nguyễn Sinh Cung – thuần khiết, tiềm ẩn, chưa nở hết. Hình ảnh hoa sen "gần bùn mà chẳng hôi tanh" phản chiếu số phận lớn lên trong nghèo khó nhưng giữ trọn phẩm giá.</p><p><strong>Tuổi thơ ở làng Sen:</strong> Cậu bé Cung lớn lên trong gia đình nhà Nho nghèo ở Nam Đàn, Nghệ An – cha là Nguyễn Sinh Sắc (đỗ Phó bảng), người có tư tưởng yêu nước và khẳng khái.</p><p><strong>Vào Huế:</strong> Theo cha vào Huế năm 1906, học trường Quốc Học. Chứng kiến cảnh người Pháp hành hạ dân Việt, lý tưởng đấu tranh dần hình thành.</p><p><strong>Ra đi tìm đường cứu nước:</strong> Năm 1911, Nguyễn Tất Thành rời cảng Nhà Rồng trên tàu Latouche-Tréville – bắt đầu hành trình 30 năm tìm đường cứu nước, được tái hiện đầy xúc động.</p>`
   },
   {
-    id: 4, cat: "Lịch Sử", emoji: "⚔️",
-    color: "#C0392B", bg: "#FDECEA",
-    title: "Hà Nội Trong Kháng Chiến",
-    author: "Nhiều tác giả", year: "1996", pages: "280 trang",
-    quick: "60 ngày đêm khói lửa và tinh thần Hà Nội",
-    desc: "Tái hiện những năm tháng hào hùng của Hà Nội trong cuộc kháng chiến chống Pháp – từ 19/12/1946 đến ngày tiếp quản Thủ đô 10/10/1954.",
-    highlights: ["Trận chiến đường phố 60 ngày đêm năm 1946-1947", "Ký ức của những chiến sĩ tự vệ thành", "Hà Nội bí mật trong vùng tạm chiếm"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách tập hợp hồi ký, tư liệu và phân tích lịch sử về Hà Nội trong 8 năm kháng chiến chống Pháp (1946-1954) – giai đoạn bi tráng nhất trong lịch sử thủ đô.</p>
-    <p><strong>Đêm 19/12/1946:</strong> Lời kêu gọi toàn quốc kháng chiến của Hồ Chủ tịch vang lên – đêm đó, tiếng súng nổ khắp Hà Nội, mở đầu cho 60 ngày đêm chiến đấu trong lòng thành phố. Trung đoàn Thủ đô "Quyết tử để Tổ quốc quyết sinh" đã viết nên huyền thoại.</p>
-    <p><strong>Chiến thuật đường phố:</strong> Bộ đội và tự vệ thành đào hào, đục tường để di chuyển từ nhà này sang nhà khác mà không cần ra đường. Mỗi ngôi nhà trở thành một pháo đài nhỏ, mỗi con phố là một chiến trường.</p>
-    <p><strong>Hà Nội vùng tạm chiếm:</strong> Khi lực lượng kháng chiến rút ra ngoài, Hà Nội sống dưới ách chiếm đóng nhưng tinh thần kháng cự không bao giờ tắt – những câu chuyện về mạng lưới nội gián, in ấn truyền đơn bí mật và nuôi giấu cán bộ.</p>
-    <p><strong>Ngày tiếp quản 10/10/1954:</strong> Sau chiến thắng Điện Biên Phủ, Hà Nội được giải phóng. Sách ghi lại không khí ngày lịch sử đó qua ký ức của những người trong cuộc – niềm vui, nước mắt và cả những cuộc chia ly.</p>
-    <p><strong>Nhân chứng lịch sử:</strong> Cuốn sách là kho lưu trữ quý báu những lời kể của các nhân chứng trực tiếp – nhiều người đã không còn sống đến nay.</p>`
+    id:4, cat:"Lịch Sử", emoji:"⚔️", color:"#C0392B", bg:"#FDECEA",
+    title:"Hà Nội Trong Kháng Chiến", author:"Nhiều tác giả", year:"1996", pages:"280 trang",
+    quick:"60 ngày đêm khói lửa và tinh thần Hà Nội",
+    desc:"Tái hiện những năm tháng hào hùng của Hà Nội trong cuộc kháng chiến chống Pháp (1946–1954).",
+    highlights:["Trận chiến đường phố 60 ngày đêm 1946-1947","Ký ức chiến sĩ tự vệ thành","Hà Nội bí mật trong vùng tạm chiếm"],
+    content:`<p><strong>Tổng quan:</strong> Cuốn sách tập hợp hồi ký, tư liệu và phân tích lịch sử về Hà Nội trong 8 năm kháng chiến chống Pháp (1946-1954) – giai đoạn bi tráng nhất trong lịch sử thủ đô.</p><p><strong>Đêm 19/12/1946:</strong> Lời kêu gọi toàn quốc kháng chiến của Hồ Chủ tịch vang lên – đêm đó, tiếng súng nổ khắp Hà Nội. Trung đoàn Thủ đô "Quyết tử để Tổ quốc quyết sinh" đã viết nên huyền thoại.</p><p><strong>Chiến thuật đường phố:</strong> Bộ đội và tự vệ thành đào hào, đục tường để di chuyển từ nhà này sang nhà khác. Mỗi ngôi nhà là pháo đài, mỗi con phố là chiến trường.</p><p><strong>Hà Nội vùng tạm chiếm:</strong> Khi lực lượng kháng chiến rút ra ngoài, Hà Nội sống dưới ách chiếm đóng nhưng tinh thần kháng cự không bao giờ tắt.</p><p><strong>Ngày tiếp quản 10/10/1954:</strong> Sau Điện Biên Phủ, Hà Nội được giải phóng. Sách ghi lại không khí ngày lịch sử đó qua ký ức người trong cuộc.</p>`
   },
   {
-    id: 5, cat: "Lịch Sử", emoji: "📜",
-    color: "#C0392B", bg: "#FDECEA",
-    title: "Búp Sen Xanh",
-    author: "Sơn Tùng", year: "1982", pages: "340 trang",
-    quick: "Tiểu thuyết lịch sử về tuổi thơ Bác Hồ",
-    desc: "Cuốn tiểu thuyết tái hiện những năm tháng thiếu thời của Nguyễn Sinh Cung – người sau này trở thành Chủ tịch Hồ Chí Minh.",
-    highlights: ["Nghiên cứu điền dã nhiều năm của tác giả Sơn Tùng", "Bức tranh xã hội Việt Nam cuối thế kỷ 19", "Hành trình từ làng Sen đến Huế và Nam Bộ"],
-    content: `<p><strong>Tổng quan:</strong> "Búp Sen Xanh" của nhà văn Sơn Tùng (xuất bản 1982) là cuốn tiểu thuyết lịch sử nổi tiếng nhất về thời thơ ấu và thanh niên của Chủ tịch Hồ Chí Minh – được tái bản hàng chục lần và dịch ra nhiều thứ tiếng.</p>
-    <p><strong>Tên sách – ý nghĩa:</strong> "Búp sen xanh" là ẩn dụ về cậu bé Nguyễn Sinh Cung – thuần khiết, tiềm ẩn, chưa nở hết. Hình ảnh hoa sen – loài hoa "gần bùn mà chẳng hôi tanh mùi bùn" – phản chiếu số phận người lớn lên trong nghèo khó nhưng giữ trọn phẩm giá.</p>
-    <p><strong>Tuổi thơ ở làng Sen:</strong> Cậu bé Cung lớn lên trong gia đình nhà Nho nghèo ở Nam Đàn, Nghệ An – cha là Nguyễn Sinh Sắc (sau này đỗ Phó bảng), một người có tư tưởng yêu nước và khẳng khái. Tuổi thơ nghèo khổ nhưng đầy ắp tình yêu thương và lý tưởng.</p>
-    <p><strong>Vào Huế:</strong> Theo cha vào Huế năm 1906, cậu Nguyễn Tất Thành (tên mới) học trường Quốc Học – nơi đào tạo nhiều nhân tài của đất nước. Chứng kiến cảnh người Pháp hành hạ dân Việt, lý tưởng đấu tranh dần hình thành.</p>
-    <p><strong>Vào Nam và ra đi:</strong> Năm 1911, Nguyễn Tất Thành rời cảng Nhà Rồng (Sài Gòn) trên tàu Latouche-Tréville để bắt đầu hành trình 30 năm tìm đường cứu nước – khoảnh khắc lịch sử được tái hiện đầy xúc động.</p>
-    <p><strong>Giá trị tư liệu:</strong> Sơn Tùng đã đi hàng nghìn kilômét, gặp hàng trăm nhân chứng để viết cuốn sách này – nhiều chi tiết không thể tìm thấy ở bất kỳ tài liệu lịch sử nào khác.</p>`
-  },
-  {
-    id: 6, cat: "Lịch Sử", emoji: "🛤️",
-    color: "#C0392B", bg: "#FDECEA",
-    title: "Vừa Đi Đường Vừa Kể Chuyện",
-    author: "T. Lan (Hồ Chí Minh)", year: "1963", pages: "120 trang",
-    quick: "Hồi ký ngắn của Bác Hồ về những năm tháng hoạt động bí mật",
-    desc: "Cuốn hồi ký do chính Chủ tịch Hồ Chí Minh viết dưới bút danh T. Lan, kể về những chuyến đi bí mật và hoạt động cách mạng đầy gian khổ.",
-    highlights: ["Bút danh T. Lan – bí danh hiếm gặp của Bác", "Những giai thoại thú vị về hoạt động bí mật", "Văn phong giản dị, chân thực của người lãnh tụ"],
-    content: `<p><strong>Tổng quan:</strong> Đây là cuốn sách hiếm gặp – được viết bởi chính Hồ Chí Minh dưới bút danh T. Lan, kể về những chuyến đi và hoạt động bí mật của Người trong giai đoạn đầu cuộc kháng chiến chống Pháp.</p>
-    <p><strong>Bút danh T. Lan:</strong> Hồ Chí Minh dùng hàng trăm bút danh trong cuộc đời – T. Lan là một trong số ít được dùng khi viết về chính bản thân mình, tạo cảm giác khách quan và khiêm tốn đặc trưng.</p>
-    <p><strong>Những chuyến đi bí mật:</strong> Bác kể về việc vượt rừng, leo núi, qua biên giới dưới nhiều vỏ bọc – lúc là thầy tu, lúc là người buôn thuốc lào, lúc là ông già chài lưới. Mỗi câu chuyện đều thể hiện sự linh hoạt, bình tĩnh và óc hài hước của Người.</p>
-    <p><strong>Gian khổ và lạc quan:</strong> Bắt giam ở Quảng Tây (Trung Quốc) suốt 14 tháng trong điều kiện khắc nghiệt, nhưng Bác vẫn làm thơ và học thêm tiếng Hán. "Kiên nhẫn chịu đựng gian khổ, Giúp hoàn thành được việc lớn" – tinh thần đó thấm đẫm từng trang sách.</p>
-    <p><strong>Văn phong đặc sắc:</strong> Khác với nhiều sách chính trị khô khan, văn Bác Hồ trong cuốn này rất giản dị, dí dỏm, gần gũi – phản ánh phong cách của một người từng trải, yêu đời và hiểu sâu tâm lý con người.</p>
-    <p><strong>Bài học:</strong> Cuốn sách dạy về sự kiên trì, linh hoạt và lạc quan trước khó khăn – những phẩm chất không chỉ cần cho người làm cách mạng mà có giá trị với tất cả mọi người.</p>`
+    id:5, cat:"Lịch Sử", emoji:"🗺️", color:"#C0392B", bg:"#FDECEA",
+    title:"Vừa Đi Đường Vừa Kể Chuyện", author:"T. Lan (Hồ Chí Minh)", year:"1963", pages:"120 trang",
+    quick:"Hồi ký của Bác Hồ về những năm tháng hoạt động bí mật",
+    desc:"Cuốn hồi ký do chính Chủ tịch Hồ Chí Minh viết dưới bút danh T. Lan, kể về những chuyến đi bí mật và hoạt động cách mạng đầy gian khổ.",
+    highlights:["Bút danh T. Lan hiếm gặp của Bác","Văn phong giản dị, dí dỏm","Bài học về kiên trì và lạc quan"],
+    content:`<p><strong>Tổng quan:</strong> Sách hiếm gặp – được viết bởi chính Hồ Chí Minh dưới bút danh T. Lan, kể về những chuyến đi và hoạt động bí mật trong giai đoạn đầu kháng chiến chống Pháp.</p><p><strong>Những chuyến đi bí mật:</strong> Bác kể về việc vượt rừng, leo núi, qua biên giới dưới nhiều vỏ bọc – lúc là thầy tu, lúc là người buôn thuốc lào, lúc là ông già chài lưới. Mỗi câu chuyện thể hiện sự linh hoạt và óc hài hước đặc trưng.</p><p><strong>Giam cầm ở Quảng Tây:</strong> 14 tháng trong điều kiện khắc nghiệt, nhưng Bác vẫn làm thơ và học thêm tiếng Hán. "Kiên nhẫn chịu đựng gian khổ, Giúp hoàn thành được việc lớn".</p><p><strong>Văn phong đặc sắc:</strong> Rất giản dị, dí dỏm, gần gũi – phản ánh phong cách của người từng trải, yêu đời và hiểu sâu tâm lý con người.</p>`
   },
 
   // ── II. VĂN HÓA ──
   {
-    id: 7, cat: "Văn Hóa", emoji: "🏮",
-    color: "#2980B9", bg: "#EAF4FB",
-    title: "Miếng Ngon Hà Nội",
-    author: "Vũ Bằng", year: "1960", pages: "200 trang",
-    quick: "Áng văn về ẩm thực Hà Nội của người con xa xứ",
-    desc: "Tập tản văn bất hủ của Vũ Bằng về những món ăn Hà Nội – được viết từ Sài Gòn với nỗi nhớ thương da diết miền Bắc.",
-    highlights: ["Viết từ Sài Gòn sau 1954 – nỗi nhớ Hà Nội thống thiết", "Mỗi món ăn gắn với một ký ức, một mùa, một người", "Văn phong trữ tình, đẹp như thơ"],
-    content: `<p><strong>Tổng quan:</strong> "Miếng Ngon Hà Nội" (1960) của Vũ Bằng không chỉ là sách ẩm thực – đây là tác phẩm văn học đỉnh cao, được viết từ Sài Gòn sau khi tác giả tập kết vào Nam, với nỗi nhớ Hà Nội và miền Bắc thống thiết khôn nguôi.</p>
-    <p><strong>Bối cảnh sáng tác:</strong> Năm 1954, đất nước chia đôi, Vũ Bằng phải ở lại miền Nam trong tư cách điệp viên bí mật. Xa Hà Nội, ông viết về những món ăn như một cách để sống lại quê hương – mỗi trang văn là một cuộc hành hương về ký ức.</p>
-    <p><strong>Những món ngon đặc sắc:</strong> Phở Hà Nội (phở Nam không thể so sánh được), bún chả, bún ốc, bánh cuốn Thanh Trì, cốm làng Vòng, kem Hồng Vân, bánh cốm Hàng Than – mỗi món được miêu tả với độ chính xác tuyệt vời về màu sắc, hương vị, cách thưởng thức.</p>
-    <p><strong>Triết lý ăn uống:</strong> Vũ Bằng không chỉ mô tả món ăn mà còn lý giải tại sao người Hà Nội ăn khác – sự tinh tế trong cách chọn nguyên liệu, cách chế biến, cách thưởng thức theo mùa, theo giờ, theo không gian.</p>
-    <p><strong>Ký ức và hoài niệm:</strong> "Ăn một miếng bánh cuốn Thanh Trì mà nhớ cả một mùa đông Hà Nội" – văn Vũ Bằng có khả năng kỳ diệu là biến thức ăn thành cảm xúc, biến ẩm thực thành thi ca.</p>
-    <p><strong>Di sản:</strong> Cuốn sách được tái bản liên tục từ 1975 đến nay – bằng chứng của một kiệt tác không bao giờ lỗi thời.</p>`
+    id:6, cat:"Văn Hóa", emoji:"🏮", color:"#2980B9", bg:"#EAF4FB",
+    title:"Miếng Ngon Hà Nội", author:"Vũ Bằng", year:"1960", pages:"200 trang",
+    quick:"Áng văn về ẩm thực Hà Nội của người con xa xứ",
+    desc:"Tập tản văn bất hủ của Vũ Bằng về những món ăn Hà Nội – được viết từ Sài Gòn với nỗi nhớ thương da diết miền Bắc.",
+    highlights:["Viết từ Sài Gòn sau 1954 – nhớ Hà Nội thống thiết","Mỗi món ăn gắn với ký ức, mùa, người","Văn phong trữ tình đẹp như thơ"],
+    content:`<p><strong>Tổng quan:</strong> "Miếng Ngon Hà Nội" (1960) không chỉ là sách ẩm thực – đây là tác phẩm văn học đỉnh cao, viết từ Sài Gòn sau khi tác giả phải ở lại miền Nam, với nỗi nhớ Hà Nội thống thiết khôn nguôi.</p><p><strong>Bối cảnh sáng tác:</strong> Năm 1954 đất nước chia đôi, Vũ Bằng ở lại miền Nam trong tư cách điệp viên bí mật. Xa Hà Nội, ông viết về những món ăn như một cách để sống lại quê hương.</p><p><strong>Những món ngon huyền thoại:</strong> Phở Hà Nội, bún chả, bún ốc, bánh cuốn Thanh Trì, cốm làng Vòng, kem Hồng Vân – mỗi món được mô tả với độ chính xác tuyệt vời về màu sắc, hương vị, cách thưởng thức.</p><p><strong>Triết lý ẩm thực:</strong> Vũ Bằng lý giải người Hà Nội ăn khác – tinh tế trong chọn nguyên liệu, chế biến, thưởng thức theo mùa, theo giờ, theo không gian.</p><p><strong>Di sản:</strong> Tái bản liên tục từ 1975 đến nay – bằng chứng của một kiệt tác không bao giờ lỗi thời.</p>`
   },
   {
-    id: 8, cat: "Văn Hóa", emoji: "🎨",
-    color: "#2980B9", bg: "#EAF4FB",
-    title: "Thú Chơi Của Người Hà Nội",
-    author: "Băng Sơn", year: "1993", pages: "250 trang",
-    quick: "Những thú vui tao nhã của người Hà Nội xưa",
-    desc: "Khảo cứu về những thú chơi thanh cao đặc trưng của người Hà Nội – từ chơi chim, chơi cá đến chơi lan, chơi cây cảnh và những trò chơi dân gian tinh tế.",
-    highlights: ["Nghệ thuật chơi chim, chơi cá vàng người Hà Nội", "Thú chơi lan, cây cảnh theo mùa", "Trò chơi dân gian đang dần thất truyền"],
-    content: `<p><strong>Tổng quan:</strong> Nhà văn Băng Sơn – người dành cả đời nghiên cứu văn hóa Hà Nội – ghi lại trong cuốn sách này những thú chơi tao nhã đang dần thất truyền của người Hà Nội xưa.</p>
-    <p><strong>Thú chơi chim:</strong> Người Hà Nội xưa nuôi chim không để ăn mà để nghe hót – chào mào, họa mi, sơn ca, vành khuyên. Nghệ thuật luyện chim, làm lồng chim (lồng Vác nổi tiếng thiên hạ), chọn chim đều đòi hỏi kiến thức sâu và tâm huyết lớn.</p>
-    <p><strong>Chơi cá vàng:</strong> Cá vàng Hồ Tây nổi tiếng khắp Đông Dương – những con cá được lai tạo qua nhiều thế hệ để có màu sắc và hình dạng độc đáo. Thú chơi cá vàng là nghệ thuật kết hợp giữa thiên nhiên và bàn tay người.</p>
-    <p><strong>Chơi lan:</strong> Người Hà Nội mê hoa lan – đặc biệt là lan kiếm, lan bạch và lan hồ điệp. Mỗi chậu lan được chăm bẵm như báu vật, và việc lan nở vào đúng dịp Tết là niềm hạnh phúc lớn.</p>
-    <p><strong>Thú chơi đá:</strong> Sưu tầm đá cảnh – những viên đá kỳ hình dị dạng từ suối, sông – là thú chơi của các bậc văn nhân. Mỗi viên đá là một tác phẩm thiên nhiên được đặt vào khung cảnh phù hợp.</p>
-    <p><strong>Cờ tướng, đánh cờ:</strong> Các quán cà phê và góc phố Hà Nội xưa luôn có người ngồi đánh cờ – thú chơi trí tuệ này là không gian xã hội quan trọng của đàn ông Hà Nội.</p>
-    <p><strong>Bảo tồn:</strong> Sách đặt câu hỏi về cách gìn giữ những thú chơi này trong thời đại số hóa – khi người trẻ ít có thời gian và kiên nhẫn để theo đuổi những niềm vui chậm rãi.</p>`
+    id:7, cat:"Văn Hóa", emoji:"🌸", color:"#2980B9", bg:"#EAF4FB",
+    title:"Hà Nội Băm Sáu Phố Phường", author:"Thạch Lam", year:"1943", pages:"150 trang",
+    quick:"Ký ức phố cổ qua ngòi bút Thạch Lam",
+    desc:"Tác phẩm bất hủ của Thạch Lam về 36 phố phường Hà Nội – mỗi con phố một nghề, một hương, một ký ức không thể quên.",
+    highlights:["Xuất bản 1943 – áng văn xuôi đẹp nhất về phố cổ","Miêu tả ẩm thực đường phố như một nghệ thuật","Văn phong trong sáng, thơ mộng của Thạch Lam"],
+    content:`<p><strong>Tổng quan:</strong> Xuất bản năm 1943, "Hà Nội Băm Sáu Phố Phường" là áng văn xuôi đẹp nhất viết về phố cổ Hà Nội – hơn 80 năm sau vẫn chưa có tác phẩm nào vượt qua được.</p><p><strong>Khu phố cổ sống động:</strong> Mỗi con phố – Hàng Đào buôn lụa đỏ, Hàng Bạc làm đồ bạc, Hàng Thiếc đóng ấm – được khắc họa như nhân vật sống động với hương thơm, âm thanh và những con người gắn bó cả đời với nghề tổ.</p><p><strong>Những món ngon huyền thoại:</strong> Bánh cuốn Thanh Trì "mỏng như tờ giấy pơ luya, trắng như tuyết", cốm làng Vòng "hương cốm là hương lúa non chưa chín, phảng phất khói lam và hơi nước mùa thu"...</p><p><strong>Hoài cổ và lo âu:</strong> Viết năm 1943, Thạch Lam đã thấy những thay đổi không thể tránh. Ông viết với tình yêu và nỗi lo – sợ rằng những vẻ đẹp này sẽ bị mất đi.</p>`
   },
   {
-    id: 9, cat: "Văn Hóa", emoji: "🌸",
-    color: "#2980B9", bg: "#EAF4FB",
-    title: "Hà Nội Băm Sáu Phố Phường",
-    author: "Thạch Lam", year: "1943", pages: "150 trang",
-    quick: "Ký ức phố cổ qua ngòi bút Thạch Lam",
-    desc: "Tác phẩm bất hủ của Thạch Lam về 36 phố phường Hà Nội – mỗi con phố một nghề, một hương, một ký ức không thể quên.",
-    highlights: ["Xuất bản 1943 – áng văn xuôi đẹp nhất về phố cổ", "Miêu tả ẩm thực đường phố như một nghệ thuật", "Văn phong trong sáng, thơ mộng của Thạch Lam"],
-    content: `<p><strong>Tổng quan:</strong> Xuất bản lần đầu năm 1943, "Hà Nội Băm Sáu Phố Phường" của Thạch Lam là áng văn xuôi đẹp nhất viết về phố cổ Hà Nội – cho đến nay vẫn chưa có tác phẩm nào vượt qua được về cả văn chương lẫn giá trị tư liệu.</p>
-    <p><strong>Khu phố cổ sống động:</strong> Mỗi con phố – Hàng Đào buôn lụa đỏ, Hàng Ngang bán hàng tạp hóa, Hàng Bạc làm đồ bạc, Hàng Thiếc đóng ấm – được khắc họa như một nhân vật sống động với hương thơm, âm thanh và những con người gắn bó cả đời với nghề tổ.</p>
-    <p><strong>Những món ngon huyền thoại:</strong> Bánh cuốn Thanh Trì ("mỏng như tờ giấy pơ luya, trắng như tuyết, mềm như lụa"), bún thang Hàng Hành, cốm làng Vòng ("hương cốm là hương lúa non chưa chín, phảng phất khói lam và hơi nước mùa thu"), bánh cốm Hàng Than – Thạch Lam viết về ẩm thực như một triết gia.</p>
-    <p><strong>Nhịp sống phố cổ:</strong> Sáng sớm tiếng rao hàng, chiều tối ánh đèn dầu hắt ra từ những cửa hiệu nhỏ, đêm khuya tiếng guốc gõ trên đường đá – Thạch Lam nắm bắt được linh hồn của phố cổ qua những chi tiết nhỏ nhất.</p>
-    <p><strong>Hoài cổ và lo âu:</strong> Viết năm 1943, Thạch Lam đã thấy những thay đổi không thể tránh khỏi của thời cuộc. Ông viết với tình yêu và nỗi lo – sợ rằng những vẻ đẹp này sẽ bị mất đi.</p>
-    <p><strong>Di sản văn học:</strong> Hơn 80 năm sau, đọc lại Thạch Lam người ta vẫn thấy như đang đứng giữa phố cổ một chiều đông năm nào – đó là dấu hiệu của một tác phẩm vĩnh cửu.</p>`
+    id:8, cat:"Văn Hóa", emoji:"🎭", color:"#2980B9", bg:"#EAF4FB",
+    title:"Người Hà Nội", author:"Nhiều tác giả", year:"2000", pages:"300 trang",
+    quick:"Chân dung tính cách và lối sống người Hà Nội",
+    desc:"Khảo cứu về bản sắc con người Hà Nội qua các thế hệ – cái thanh lịch, tinh tế và đầy mâu thuẫn của người Tràng An.",
+    highlights:["Phân tích tính cách người Hà Nội gốc và nhập cư","Sự biến đổi văn hóa trong thời đô thị hóa","Chuẩn mực ứng xử và ngôn ngữ người Kinh thành"],
+    content:`<p><strong>Tổng quan:</strong> Công trình văn hóa học đặt câu hỏi: "Người Hà Nội" là ai? Họ có gì khác biệt với người các vùng miền khác?</p><p><strong>Nét thanh lịch Tràng An:</strong> "Chẳng thơm cũng thể hoa nhài / Dẫu không thanh lịch cũng người Tràng An" – biểu hiện cụ thể: cách ăn nói không to tiếng, cư xử tế nhị, mặc kỹ lưỡng ngay khi đi chợ.</p><p><strong>Ngôn ngữ đặc trưng:</strong> Người Hà Nội gốc có cách phát âm và dùng từ riêng – những âm sắc và vốn từ này đang dần mất đi trong thế hệ trẻ.</p><p><strong>Người Hà Nội "mới":</strong> Từ sau 1954, hàng triệu người từ các tỉnh đổ về – sự pha trộn tạo ra Hà Nội mới phong phú hơn nhưng cũng mất đi một số nét thuần túy cũ.</p>`
   },
   {
-    id: 10, cat: "Văn Hóa", emoji: "🎭",
-    color: "#2980B9", bg: "#EAF4FB",
-    title: "Người Hà Nội",
-    author: "Nhiều tác giả", year: "2000", pages: "300 trang",
-    quick: "Chân dung tính cách và lối sống người Hà Nội",
-    desc: "Khảo cứu sâu sắc về bản sắc con người Hà Nội qua các thế hệ – cái thanh lịch, tinh tế và cũng đầy mâu thuẫn của người Tràng An.",
-    highlights: ["Phân tích tính cách người Hà Nội gốc và người nhập cư", "Sự biến đổi văn hóa trong thời đô thị hóa", "Chuẩn mực ứng xử và ngôn ngữ người Kinh thành"],
-    content: `<p><strong>Tổng quan:</strong> Đây là công trình nghiên cứu văn hóa học đặt câu hỏi căn bản: "Người Hà Nội" là ai? Họ có gì khác biệt với người các vùng miền khác trong đất nước?</p>
-    <p><strong>Nét thanh lịch Tràng An:</strong> "Chẳng thơm cũng thể hoa nhài / Dẫu không thanh lịch cũng người Tràng An" – câu ca dao nói lên kỳ vọng về người Hà Nội. Sách phân tích những biểu hiện cụ thể: cách ăn nói không to tiếng, cách cư xử tế nhị, cách mặc kỹ lưỡng ngay cả khi đi chợ.</p>
-    <p><strong>Ngôn ngữ đặc trưng:</strong> Người Hà Nội gốc có cách phát âm và dùng từ riêng – không nói "con dao" mà nói "con dao", không nói "cái chăn" mà nói "cái chăn". Những âm sắc và vốn từ này đang dần mất đi trong thế hệ trẻ.</p>
-    <p><strong>Văn hóa tiếp khách:</strong> Người Hà Nội xưa tiếp khách rất cầu kỳ – trà phải pha đúng cách, bánh kẹo phải đặt ra đĩa, không bao giờ mời khách ăn trực tiếp từ gói. Những quy tắc ngầm này tạo nên sự sang trọng đặc biệt.</p>
-    <p><strong>Người Hà Nội "mới":</strong> Từ sau 1954, hàng triệu người từ các tỉnh đổ về Hà Nội – sự pha trộn này tạo ra một Hà Nội mới phong phú hơn nhưng cũng mất đi một số nét thuần túy cũ. Sách không phán xét mà chỉ ghi nhận sự biến đổi.</p>
-    <p><strong>Hà Nội toàn cầu:</strong> Thế hệ Hà Nội trẻ ngày nay – đi du học, làm việc cho công ty nước ngoài, sống trong các khu đô thị mới – đang định hình một bản sắc Hà Nội thứ ba, khác với cả Hà Nội cổ lẫn Hà Nội bao cấp.</p>`
-  },
-  {
-    id: 11, cat: "Văn Hóa", emoji: "🖼️",
-    color: "#2980B9", bg: "#EAF4FB",
-    title: "Tinh Hoa Hà Nội",
-    author: "Nhiều tác giả", year: "2010", pages: "380 trang",
-    quick: "Tổng hợp những tinh hoa văn hóa nghìn năm Thăng Long",
-    desc: "Công trình tổng hợp quy mô về những tinh hoa văn hóa, nghệ thuật và tri thức của Hà Nội qua nghìn năm lịch sử.",
-    highlights: ["Nghệ thuật truyền thống: tuồng, chèo, ca trù", "Thủ công mỹ nghệ các làng nghề quanh Hà Nội", "Kiến trúc và quy hoạch đô thị lịch sử"],
-    content: `<p><strong>Tổng quan:</strong> Xuất bản nhân dịp Đại lễ 1000 năm Thăng Long, "Tinh Hoa Hà Nội" là công trình quy mô nhất từ trước đến nay tổng hợp các giá trị văn hóa, nghệ thuật và tri thức của Hà Nội.</p>
-    <p><strong>Ca trù – tinh hoa âm nhạc:</strong> Ca trù (hát ả đào) là thể loại âm nhạc cung đình – dân gian độc đáo nhất của người Bắc Bộ, đặc biệt là Hà Nội. Sách giới thiệu chi tiết các làn điệu, nhạc cụ và nghệ thuật biểu diễn của ca trù – đã được UNESCO công nhận năm 2009.</p>
-    <p><strong>Làng nghề quanh Hà Nội:</strong> Gốm Bát Tràng, lụa Vạn Phúc, nón Chuông, tranh Hàng Trống, khảm trai Chuyên Mỹ – mỗi làng nghề là một trường phái thủ công độc đáo đã tồn tại hàng trăm năm. Sách mô tả quy trình sản xuất và tinh thần nghề nghiệp của nghệ nhân.</p>
-    <p><strong>Kiến trúc lịch sử:</strong> Văn Miếu – Quốc Tử Giám (1070), Hoàng thành Thăng Long, đình Kim Liên, chùa Một Cột – những công trình không chỉ đẹp mà còn chứa đựng triết lý về vũ trụ và xã hội của người xưa.</p>
-    <p><strong>Tri thức và giáo dục:</strong> Hà Nội là trung tâm giáo dục của cả nước từ thời Lý – Quốc Tử Giám là trường đại học đầu tiên của Việt Nam. Truyền thống hiếu học và trọng tri thức là bản sắc sâu xa nhất của người Hà Nội.</p>
-    <p><strong>Ẩm thực tinh hoa:</strong> Từ món ăn cung đình đến ẩm thực đường phố – Hà Nội là nơi hội tụ và chắt lọc tinh hoa ẩm thực từ khắp mọi miền, tạo nên một nền ẩm thực độc đáo không nơi nào có được.</p>`
+    id:9, cat:"Văn Hóa", emoji:"🎨", color:"#2980B9", bg:"#EAF4FB",
+    title:"Tinh Hoa Hà Nội", author:"Nhiều tác giả", year:"2010", pages:"380 trang",
+    quick:"Tổng hợp những tinh hoa văn hóa nghìn năm Thăng Long",
+    desc:"Công trình tổng hợp quy mô về những tinh hoa văn hóa, nghệ thuật và tri thức của Hà Nội qua nghìn năm lịch sử.",
+    highlights:["Nghệ thuật truyền thống: ca trù, chèo, quan họ","Thủ công mỹ nghệ các làng nghề quanh Hà Nội","Kiến trúc và di tích lịch sử"],
+    content:`<p><strong>Tổng quan:</strong> Xuất bản nhân Đại lễ 1000 năm Thăng Long, "Tinh Hoa Hà Nội" là công trình quy mô nhất tổng hợp các giá trị văn hóa, nghệ thuật và tri thức của Hà Nội.</p><p><strong>Ca trù – Di sản UNESCO 2009:</strong> Thể loại âm nhạc cung đình – dân gian độc đáo nhất của người Bắc Bộ, đặc biệt là Hà Nội. Sách giới thiệu chi tiết các làn điệu, nhạc cụ và nghệ thuật biểu diễn.</p><p><strong>Làng nghề quanh Hà Nội:</strong> Gốm Bát Tràng, lụa Vạn Phúc, nón Chuông, tranh Hàng Trống, khảm trai Chuyên Mỹ – mỗi làng nghề là trường phái thủ công độc đáo tồn tại hàng trăm năm.</p><p><strong>Kiến trúc lịch sử:</strong> Văn Miếu (1070), Hoàng thành Thăng Long, đình Kim Liên, chùa Một Cột – những công trình không chỉ đẹp mà còn chứa đựng triết lý về vũ trụ và xã hội người xưa.</p>`
   },
 
   // ── III. ẨM THỰC ──
   {
-    id: 12, cat: "Ẩm Thực", emoji: "🍜",
-    color: "#E67E22", bg: "#FEF3E2",
-    title: "Phở – Tinh Hoa Ẩm Thực Việt",
-    author: "Nguyễn Ngọc Tiến", year: "2018", pages: "220 trang",
-    quick: "Lịch sử và nghệ thuật nấu phở Việt Nam",
-    desc: "Hành trình khám phá nguồn gốc, lịch sử và nghệ thuật nấu món phở – linh hồn của ẩm thực Việt Nam và di sản văn hóa dân tộc.",
-    highlights: ["Tranh luận về nguồn gốc phở: Việt, Hoa hay Pháp?", "Phở Hà Nội vs Phở Sài Gòn – hai trường phái", "Công thức nước dùng chuẩn và bí quyết nhà hàng"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách đặt câu hỏi: Phở ra đời từ đâu? Người Việt, người Hoa hay người Pháp đã "phát minh" ra món ăn quốc hồn quốc túy này?</p>
-    <p><strong>Nguồn gốc – tranh luận lịch sử:</strong> Ba giả thuyết chính được phân tích kỹ: (1) Từ "pot-au-feu" của Pháp – món hầm bò của người Pháp được Việt hóa; (2) Từ "ngưu nhục phấn" của người Hoa; (3) Hoàn toàn là sáng tạo thuần Việt tại Nam Định đầu thế kỷ 20. Tác giả nghiêng về giả thuyết thứ ba có pha trộn yếu tố Hoa.</p>
-    <p><strong>Phở Hà Nội:</strong> Nước dùng trong vắt, vị thanh ngọt tự nhiên từ xương. Bánh phở mỏng, mềm. Hành tươi và hành chần đặt gọn trên mặt. Không rau sống, không tương. Chỉ có giấm tỏi và ớt ngâm. Đây là "chính thống" của phở.</p>
-    <p><strong>Phở Sài Gòn:</strong> Nước dùng ngọt đậm hơn (có đường), bánh phở to hơn. Kèm theo đĩa rau sống (giá, húng quế, ngò gai), tương đen, tương đỏ. Hai miền, hai triết lý ẩm thực – không ai đúng sai, chỉ là sự khác biệt văn hóa.</p>
-    <p><strong>Nghệ thuật nấu nước dùng:</strong> Xương ống ninh 8-12 tiếng, gừng và hành tây nướng thơm, hoa hồi, quế, thảo quả, đinh hương rang nhẹ. Mỗi gia đình hàng phở giữ tỷ lệ gia vị như bí mật kinh doanh.</p>
-    <p><strong>Phở toàn cầu:</strong> Từ Hà Nội đến New York, Paris, Sydney, Tokyo – phở đã có mặt ở hàng trăm quốc gia và được Michelin xếp hạng. Nhưng phở ngon nhất vẫn là những bát phở 5 giờ sáng ở phố cổ Hà Nội.</p>`
+    id:10, cat:"Ẩm Thực", emoji:"🍜", color:"#E67E22", bg:"#FEF3E2",
+    title:"Phở – Tinh Hoa Ẩm Thực Việt", author:"Nguyễn Ngọc Tiến", year:"2018", pages:"220 trang",
+    quick:"Lịch sử và nghệ thuật nấu phở Việt Nam",
+    desc:"Hành trình khám phá nguồn gốc, lịch sử và nghệ thuật nấu món phở – linh hồn của ẩm thực Việt Nam.",
+    highlights:["Tranh luận nguồn gốc phở: Việt, Hoa hay Pháp?","Phở Hà Nội vs Phở Sài Gòn – hai trường phái","Công thức nước dùng chuẩn và bí quyết nhà hàng"],
+    content:`<p><strong>Nguồn gốc – tranh luận lịch sử:</strong> Ba giả thuyết: (1) Từ "pot-au-feu" của Pháp; (2) Từ "ngưu nhục phấn" của người Hoa; (3) Hoàn toàn là sáng tạo thuần Việt tại Nam Định đầu thế kỷ 20. Tác giả nghiêng về giả thuyết thứ ba có pha trộn yếu tố Hoa.</p><p><strong>Phở Hà Nội:</strong> Nước dùng trong vắt, vị thanh ngọt tự nhiên từ xương. Bánh phở mỏng, mềm. Hành tươi và hành chần. Không rau sống, không tương. Chỉ giấm tỏi và ớt ngâm.</p><p><strong>Phở Sài Gòn:</strong> Nước dùng ngọt đậm hơn (có đường), bánh phở to hơn. Kèm đĩa rau sống (giá, húng quế, ngò gai), tương đen, tương đỏ. Hai miền, hai triết lý – không ai đúng sai.</p><p><strong>Nghệ thuật nước dùng:</strong> Xương ống ninh 8-12 tiếng, gừng và hành tây nướng thơm, hoa hồi, quế, thảo quả, đinh hương rang nhẹ. Mỗi hàng phở giữ tỷ lệ gia vị như bí mật kinh doanh.</p><p><strong>Phở toàn cầu:</strong> Từ Hà Nội đến New York, Paris, Sydney – phở đã có mặt ở hàng trăm quốc gia và được Michelin xếp hạng.</p>`
   },
   {
-    id: 13, cat: "Ẩm Thực", emoji: "🥢",
-    color: "#E67E22", bg: "#FEF3E2",
-    title: "Văn Hóa Ẩm Thực Hà Nội",
-    author: "Múi Nguyễn", year: "2015", pages: "260 trang",
-    quick: "Bách khoa ẩm thực đường phố Hà Nội",
-    desc: "Hành trình khám phá những món ăn đặc sắc của Hà Nội – từ bún thang, bánh cuốn đến kem Tràng Tiền và cốm Vòng.",
-    highlights: ["Bản đồ ẩm thực theo từng con phố Hà Nội", "Câu chuyện văn hóa đằng sau từng món ăn", "Ăn theo mùa – triết lý ẩm thực người Hà Nội"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách là bản đồ ẩm thực toàn diện của Hà Nội – không chỉ ghi chép công thức mà còn kể câu chuyện văn hóa đằng sau mỗi món ăn và mỗi địa chỉ.</p>
-    <p><strong>Bún thang – bữa ăn hoàng gia:</strong> Bún thang được coi là món ăn cầu kỳ nhất Hà Nội – nước dùng từ xương gà, tôm he, mực khô, củ cải muối. Toppings gồm gà xé, trứng tráng thái chỉ, giò lụa, nấm hương, tôm he, hành phi. Ăn phải thêm mắm tôm, rau mùi – thiếu một thứ là mất hương vị.</p>
-    <p><strong>Bánh cuốn Thanh Trì:</strong> Chỉ riêng làng Thanh Trì mới làm được bánh cuốn mỏng và mềm đến vậy – bí quyết là gạo ngâm đủ giờ, tráng trên vải xô ướt, không nhân. Chấm với nước mắm pha giấm thanh, thêm chả quế và hành phi.</p>
-    <p><strong>Cốm làng Vòng:</strong> Chỉ làm được vào tháng 8-9 âm lịch khi lúa nếp vào độ "đòng đòng". Rang, giã, sàng nhiều lần để hạt cốm xanh mướt, dẻo thơm. Ăn cốm phải gói trong lá sen, ăn với chuối tiêu chín – không cần thêm gì nữa.</p>
-    <p><strong>Kem Tràng Tiền:</strong> Thương hiệu kem quốc dân từ thời bao cấp – kem que 2 tầng (xoài dứa hoặc sô cô la vani) giá rẻ mà ngon, xếp hàng dài là hình ảnh đặc trưng của Hà Nội một thời. Ngày nay vẫn còn ở 35 Tràng Tiền.</p>
-    <p><strong>Hàng rong – linh hồn phố phố:</strong> Những gánh hàng rong với tiếng rao đặc trưng – "Ai bánh rán nào...", "Xôi lạc, xôi đỗ đây..." – là âm nhạc của phố phường Hà Nội, đang dần biến mất theo thời gian.</p>`
+    id:11, cat:"Ẩm Thực", emoji:"🥢", color:"#E67E22", bg:"#FEF3E2",
+    title:"Văn Hóa Ẩm Thực Hà Nội", author:"Nhiều tác giả", year:"2015", pages:"260 trang",
+    quick:"Bách khoa ẩm thực đường phố Hà Nội",
+    desc:"Hành trình khám phá những món ăn đặc sắc của Hà Nội – từ bún thang, bánh cuốn đến kem Tràng Tiền và cốm Vòng.",
+    highlights:["Bản đồ ẩm thực theo từng con phố","Câu chuyện văn hóa đằng sau từng món","Ăn theo mùa – triết lý ẩm thực người Hà Nội"],
+    content:`<p><strong>Bún thang – bữa ăn hoàng gia:</strong> Nước dùng từ xương gà, tôm he, mực khô, củ cải muối. Toppings gồm gà xé, trứng tráng thái chỉ, giò lụa, nấm hương, tôm he, hành phi. Ăn phải thêm mắm tôm – thiếu một thứ là mất hương vị.</p><p><strong>Bánh cuốn Thanh Trì:</strong> Chỉ làng Thanh Trì mới làm được bánh mỏng và mềm đến vậy – gạo ngâm đủ giờ, tráng trên vải xô ướt, không nhân. Chấm nước mắm pha giấm thanh, thêm chả quế và hành phi.</p><p><strong>Cốm làng Vòng:</strong> Chỉ làm được tháng 8-9 âm lịch khi lúa nếp vào độ "đòng đòng". Rang, giã, sàng nhiều lần. Ăn với chuối tiêu chín – không cần thêm gì nữa.</p><p><strong>Kem Tràng Tiền:</strong> Thương hiệu kem quốc dân từ thời bao cấp – kem que 2 tầng giá rẻ mà ngon, xếp hàng dài là hình ảnh đặc trưng. Ngày nay vẫn còn ở 35 Tràng Tiền.</p>`
   },
   {
-    id: 14, cat: "Ẩm Thực", emoji: "🌿",
-    color: "#E67E22", bg: "#FEF3E2",
-    title: "Ẩm Thực Đất Thăng Long",
-    author: "Đinh Văn Tuấn", year: "2009", pages: "290 trang",
-    quick: "Lịch sử ẩm thực kinh đô ngàn năm",
-    desc: "Nghiên cứu về ẩm thực Thăng Long từ thời phong kiến đến hiện đại – những món ăn cung đình và dân dã tạo nên hồn ẩm thực Hà Nội.",
-    highlights: ["Ẩm thực cung đình triều Lý – Trần – Lê – Nguyễn", "Ảnh hưởng của ẩm thực Hoa, Pháp, Ấn Độ", "Bảo tồn công thức cổ truyền trong thời hiện đại"],
-    content: `<p><strong>Tổng quan:</strong> Lấy bối cảnh lịch sử làm khung, cuốn sách truy tìm nguồn gốc ẩm thực Hà Nội từ bếp cung đình thời Lý – Trần – Lê đến những quán ăn bình dân hiện đại.</p>
-    <p><strong>Ẩm thực cung đình:</strong> Bếp hoàng cung thời Lê có hàng trăm đầu bếp chuyên trách – người nấu cơm, người làm canh, người chế biến đồ ngọt. Những món như nem công chả phượng (thực ra là nem làm từ thịt công nấu theo cách đặc biệt) đã thành thuật ngữ chỉ đồ ngon của vua chúa.</p>
-    <p><strong>Từ cung đình ra dân gian:</strong> Nhiều món ăn cung đình dần phổ biến khi đầu bếp hoàng gia về hưu và truyền nghề. Bún thang vốn là món ăn của giới thượng lưu mới ra đến bình dân; bánh phu thê từ lễ vật cưới hỏi thành hàng quán.</p>
-    <p><strong>Ảnh hưởng Pháp:</strong> Bánh mì Việt Nam là sự sáng tạo thiên tài – baguette Pháp được cải biến với bột pha thêm gạo cho nhẹ hơn, nhân là đồ Việt (giò, patê, rau thơm). Cà phê phin Việt Nam cũng từ cà phê Pháp mà ra.</p>
-    <p><strong>Ảnh hưởng Hoa:</strong> Hủ tiếu, mì vằn thắn, bánh bao – những món Hoa được Việt hóa triệt để với gia vị và nước chấm Việt Nam. Làng Hàng Buồm (Hà Nội) từng là phố Tàu với nhiều tiệm ăn Trung Hoa nổi tiếng.</p>
-    <p><strong>Thách thức bảo tồn:</strong> Nhiều công thức cổ truyền chỉ còn trong ký ức của các cụ già – khi họ ra đi, công thức cũng ra đi theo. Sách kêu gọi việc ghi chép, bảo tồn và truyền dạy như một trách nhiệm văn hóa.</p>`
+    id:12, cat:"Ẩm Thực", emoji:"🌿", color:"#E67E22", bg:"#FEF3E2",
+    title:"Ẩm Thực Đất Thăng Long", author:"Đinh Văn Tuấn", year:"2009", pages:"290 trang",
+    quick:"Lịch sử ẩm thực kinh đô ngàn năm",
+    desc:"Nghiên cứu về ẩm thực Thăng Long từ thời phong kiến đến hiện đại – những món ăn cung đình và dân dã tạo nên hồn ẩm thực Hà Nội.",
+    highlights:["Ẩm thực cung đình triều Lý – Trần – Lê – Nguyễn","Ảnh hưởng ẩm thực Hoa, Pháp biến tấu thành Việt","Bảo tồn công thức cổ truyền trong thời hiện đại"],
+    content:`<p><strong>Ẩm thực cung đình:</strong> Bếp hoàng cung thời Lê có hàng trăm đầu bếp chuyên trách. Những món như "nem công chả phượng" đã thành thuật ngữ chỉ đồ ngon của vua chúa.</p><p><strong>Từ cung đình ra dân gian:</strong> Nhiều món cung đình dần phổ biến khi đầu bếp hoàng gia về hưu và truyền nghề. Bún thang vốn là món của giới thượng lưu mới ra đến bình dân.</p><p><strong>Ảnh hưởng Pháp:</strong> Bánh mì Việt Nam là sự sáng tạo thiên tài – baguette Pháp được cải biến với bột pha thêm gạo cho nhẹ hơn, nhân là đồ Việt. Cà phê phin Việt Nam cũng từ cà phê Pháp mà ra.</p><p><strong>Thách thức bảo tồn:</strong> Nhiều công thức cổ truyền chỉ còn trong ký ức các cụ già. Sách kêu gọi ghi chép và truyền dạy như trách nhiệm văn hóa.</p>`
   },
   {
-    id: 15, cat: "Ẩm Thực", emoji: "🧆",
-    color: "#E67E22", bg: "#FEF3E2",
-    title: "Ăn Quà Hà Nội",
-    author: "Băng Sơn", year: "1991", pages: "180 trang",
-    quick: "Nghệ thuật ăn quà vặt của người Hà Nội",
-    desc: "Khảo cứu thú vị về văn hóa ăn quà – những món ăn vặt đặc trưng của người Hà Nội và nghệ thuật thưởng thức chúng.",
-    highlights: ["Bánh rán, bánh trôi, bánh chay theo mùa", "Xôi ngũ sắc, xôi xéo, xôi lạc", "Chè kho, chè đỗ đen, chè sen Long An"],
-    content: `<p><strong>Tổng quan:</strong> Nhà văn Băng Sơn – "ông già Hà Nội" với hàng trăm bài viết về văn hóa thủ đô – dành riêng cuốn sách này để nói về những món quà vặt đặc trưng của Hà Nội.</p>
-    <p><strong>Văn hóa "ăn quà":</strong> Người Hà Nội không chỉ ăn ba bữa – họ có truyền thống "ăn quà" vào các thời điểm trong ngày: sáng sớm xôi, 9 giờ bánh rán, trưa kem, chiều tối chè. Đây là nét văn hóa riêng không nơi nào có.</p>
-    <p><strong>Xôi – vua quà sáng:</strong> Xôi xéo (đỗ xanh, hành phi, mỡ gà), xôi gấc (đỏ, dẻo, thơm nếp), xôi ngũ sắc (5 màu từ 5 loại nguyên liệu tự nhiên), xôi lạc, xôi đỗ đen – mỗi loại có hương vị và dịp ăn riêng.</p>
-    <p><strong>Bánh theo mùa:</strong> Tháng 3 âm lịch: bánh trôi, bánh chay (Tết Hàn thực); tháng 7: bánh nếp, bánh lá gai; tháng 8: bánh Trung Thu đặc biệt; Tết Nguyên Đán: bánh chưng. Lịch bánh là lịch văn hóa của người Việt.</p>
-    <p><strong>Chè – nghệ thuật thưởng thức:</strong> Chè kho (đỗ xanh nấu đặc, khuôn thành miếng, ăn ngày Tết), chè đỗ đen nước cốt dừa, chè sen Long An (sen không hạt, chỉ có mùi hương), chè bưởi (múi bưởi tách trắng tinh, nước đường thơm mùi hoa bưởi).</p>
-    <p><strong>Hàng rong quà vặt:</strong> "Ai bánh trôi nào..." – tiếng rao của bà hàng rong gánh bánh trôi tháng 3 là âm thanh đặc trưng của Hà Nội xưa. Sách ghi lại những tiếng rao đặc trưng sắp thất truyền này như một di sản phi vật thể.</p>`
+    id:13, cat:"Ẩm Thực", emoji:"🧆", color:"#E67E22", bg:"#FEF3E2",
+    title:"Ăn Quà Hà Nội", author:"Băng Sơn", year:"1991", pages:"180 trang",
+    quick:"Nghệ thuật ăn quà vặt của người Hà Nội",
+    desc:"Khảo cứu về văn hóa ăn quà – những món ăn vặt đặc trưng của người Hà Nội và nghệ thuật thưởng thức chúng.",
+    highlights:["Bánh rán, bánh trôi, bánh chay theo mùa","Xôi ngũ sắc, xôi xéo, xôi lạc","Chè kho, chè đỗ đen, chè sen"],
+    content:`<p><strong>Văn hóa "ăn quà":</strong> Người Hà Nội không chỉ ăn ba bữa – họ có truyền thống "ăn quà" vào các thời điểm trong ngày: sáng sớm xôi, 9 giờ bánh rán, trưa kem, chiều tối chè. Đây là nét văn hóa riêng không nơi nào có.</p><p><strong>Xôi – vua quà sáng:</strong> Xôi xéo (đỗ xanh, hành phi, mỡ gà), xôi gấc (đỏ, dẻo, thơm nếp), xôi ngũ sắc (5 màu từ 5 loại nguyên liệu tự nhiên), xôi lạc, xôi đỗ đen – mỗi loại có hương vị và dịp ăn riêng.</p><p><strong>Bánh theo mùa:</strong> Tháng 3 âm lịch: bánh trôi, bánh chay (Tết Hàn thực); tháng 8: bánh Trung Thu. Lịch bánh là lịch văn hóa của người Việt.</p><p><strong>Hàng rong quà vặt:</strong> "Ai bánh trôi nào..." – tiếng rao của bà hàng rong gánh bánh trôi tháng 3 là âm nhạc của phố phường Hà Nội xưa đang dần thất truyền.</p>`
   },
 
   // ── IV. TRANG PHỤC ──
   {
-    id: 16, cat: "Trang Phục", emoji: "👘",
-    color: "#8E44AD", bg: "#F5EEF8",
-    title: "Ngàn Năm Áo Mũ",
-    author: "Trần Quang Đức", year: "2013", pages: "480 trang",
-    quick: "Lịch sử trang phục Việt Nam qua nghìn năm",
-    desc: "Công trình nghiên cứu đồ sộ về lịch sử trang phục và mũ mão Việt Nam từ thời cổ đại đến cuối thế kỷ 19 – tái hiện hình ảnh người Việt qua từng thời đại.",
-    highlights: ["Trang phục cung đình từ thời Lý đến Nguyễn", "Nguồn gốc thực sự của áo dài Việt Nam", "Ảnh hưởng trang phục Trung Hoa và sự biệt hóa"],
-    content: `<p><strong>Tổng quan:</strong> Đây là công trình nghiên cứu lớn nhất từ trước đến nay về lịch sử trang phục Việt Nam, do tác giả Trần Quang Đức thực hiện trong nhiều năm với nguồn tư liệu phong phú từ thư tịch cổ, tranh vẽ và di vật khảo cổ.</p>
-    <p><strong>Thời Lý – Trần (thế kỷ 11-14):</strong> Triều đình Lý học tập mạnh từ Trung Hoa – long bào màu vàng, mũ miện, đai ngọc... nhưng dần dần có những biệt hóa riêng. Người dân mặc áo giao lĩnh (chéo cài phải), vải đa phần là gai hoặc tơ thô.</p>
-    <p><strong>Thời Lê sơ (thế kỷ 15):</strong> Sau khi đuổi giặc Minh, vua Lê cải cách trang phục triệt để – xây dựng hệ thống phẩm phục đồng bộ, phân biệt rõ ràng theo phẩm cấp. Màu sắc, chất liệu, họa tiết đều có quy định nghiêm ngặt.</p>
-    <p><strong>Sự ra đời của áo dài:</strong> Tiết lộ gây ngạc nhiên – áo dài hiện đại KHÔNG phải là trang phục "nghìn năm". Áo dài cải cách (áo Lemur) ra đời năm 1934 do họa sĩ Cát Tường thiết kế dưới ảnh hưởng thời trang Pháp, dựa trên áo ngũ thân truyền thống. Áo ngũ thân mới là trang phục truyền thống thực sự.</p>
-    <p><strong>Trang phục dân gian:</strong> Áo tứ thân, yếm đào, khăn mỏ quạ của phụ nữ Bắc Bộ – những trang phục đồng ruộng thực dụng nhưng rất đẹp khi kết hợp đúng cách.</p>
-    <p><strong>Giá trị:</strong> Sách được minh họa phong phú (hàng trăm hình ảnh phục dựng) và là tài liệu tham chiếu không thể thiếu cho các nhà thiết kế thời trang muốn khai thác di sản văn hóa Việt.</p>`
+    id:14, cat:"Trang Phục", emoji:"👘", color:"#8E44AD", bg:"#F5EEF8",
+    title:"Ngàn Năm Áo Mũ", author:"Trần Quang Đức", year:"2013", pages:"480 trang",
+    quick:"Lịch sử trang phục Việt Nam qua nghìn năm",
+    desc:"Công trình nghiên cứu đồ sộ về lịch sử trang phục và mũ mão Việt Nam từ thời cổ đại đến cuối thế kỷ 19.",
+    highlights:["Trang phục cung đình từ thời Lý đến Nguyễn","Nguồn gốc thực sự của áo dài Việt Nam","Ảnh hưởng trang phục Trung Hoa và sự biệt hóa"],
+    content:`<p><strong>Tổng quan:</strong> Công trình nghiên cứu lớn nhất về lịch sử trang phục Việt Nam, do Trần Quang Đức thực hiện nhiều năm với nguồn tư liệu phong phú từ thư tịch cổ, tranh vẽ và di vật khảo cổ.</p><p><strong>Thời Lý – Trần – Lê:</strong> Triều đình học tập từ Trung Hoa nhưng dần có biệt hóa riêng. Long bào màu vàng, mũ miện, đai ngọc của vua chúa được phân tích chi tiết.</p><p><strong>Tiết lộ về áo dài:</strong> Áo dài hiện đại KHÔNG phải là trang phục "nghìn năm"! Áo dài cải cách (áo Lemur) ra đời năm 1934 do họa sĩ Cát Tường thiết kế dưới ảnh hưởng thời trang Pháp, dựa trên áo ngũ thân truyền thống. Áo ngũ thân mới là trang phục truyền thống thực sự.</p><p><strong>Trang phục dân gian:</strong> Áo tứ thân, yếm đào, khăn mỏ quạ của phụ nữ Bắc Bộ – những trang phục đồng ruộng thực dụng nhưng rất đẹp khi kết hợp đúng cách.</p>`
   },
   {
-    id: 17, cat: "Trang Phục", emoji: "🪡",
-    color: "#8E44AD", bg: "#F5EEF8",
-    title: "Trang Phục Thăng Long – Hà Nội",
-    author: "Đoàn Thị Tình", year: "2006", pages: "320 trang",
-    quick: "Thời trang kinh đô qua các triều đại",
-    desc: "Nghiên cứu đặc thù về trang phục của người Kinh thành Thăng Long – nơi hội tụ tinh hoa thời trang cả nước qua các thời kỳ lịch sử.",
-    highlights: ["Phố Hàng Ngang – Hàng Đào: trung tâm thời trang xưa", "Trang phục người Hà Nội dưới thời Pháp thuộc", "Sự pha trộn thẩm mỹ Đông – Tây đầu thế kỷ 20"],
-    content: `<p><strong>Tổng quan:</strong> Tập trung vào vùng đất kinh đô – nơi trang phục không chỉ là ăn mặc mà còn là ngôn ngữ về địa vị, thẩm mỹ và bản sắc vùng miền.</p>
-    <p><strong>Đặc trưng người Hà Nội:</strong> Người Hà Nội xưa nổi tiếng với cách ăn mặc kỹ lưỡng – chọn vải tốt, màu sắc nhã nhặn (không lòe loẹt), đường may tinh tế, không bao giờ mặc quần áo nhàu nát ra đường dù chỉ đi chợ. Đây là biểu hiện của "thanh lịch Tràng An".</p>
-    <p><strong>Phố Hàng Ngang – Hàng Đào:</strong> Trung tâm thời trang của Hà Nội xưa – nơi buôn bán lụa là gấm vóc từ khắp nơi. Hàng Đào bán vải màu đỏ và hồng (đào), Hàng Ngang bán hàng ngang (vải dệt ngang). Những gia đình buôn vải lớn như Cự Doanh, Phúc Lợi định hình thị hiếu thời trang kinh thành.</p>
-    <p><strong>Thời Pháp thuộc:</strong> Tầng lớp thượng lưu Hà Nội tiếp nhận mode Pháp nhưng theo cách riêng – phụ nữ mặc áo dài cổ cao kiểu mới với vải tây (organza, tuyn), đàn ông mặc sơ mi cà vạt nhưng kết hợp với quần ống rộng kiểu Việt.</p>
-    <p><strong>Thẩm mỹ lai ghép:</strong> Áo dài vải hoa nhí, giày cao gót, ví da nhỏ – phụ nữ Hà Nội thập niên 1930-40 đã tạo ra một phong cách "Đông-Tây hội tụ" độc đáo, hiện đại mà vẫn giữ hồn Việt.</p>
-    <p><strong>Ngày nay:</strong> Phong trào mặc áo dài đến công sở, trường học, đặc biệt các ngày lễ lớn đang hồi sinh – Hà Nội tiếp tục là nơi dẫn đầu xu hướng thời trang truyền thống của cả nước.</p>`
+    id:15, cat:"Trang Phục", emoji:"🪡", color:"#8E44AD", bg:"#F5EEF8",
+    title:"Trang Phục Thăng Long – Hà Nội", author:"Đoàn Thị Tình", year:"2006", pages:"320 trang",
+    quick:"Thời trang kinh đô qua các triều đại",
+    desc:"Nghiên cứu về trang phục của người Kinh thành Thăng Long – nơi hội tụ tinh hoa thời trang cả nước qua các thời kỳ lịch sử.",
+    highlights:["Phố Hàng Ngang – Hàng Đào: trung tâm thời trang xưa","Trang phục người Hà Nội dưới thời Pháp thuộc","Thẩm mỹ Đông – Tây hội tụ đầu thế kỷ 20"],
+    content:`<p><strong>Đặc trưng người Hà Nội:</strong> Người Hà Nội xưa nổi tiếng với cách ăn mặc kỹ lưỡng – chọn vải tốt, màu sắc nhã nhặn, đường may tinh tế, không bao giờ mặc quần áo nhàu nát ra đường dù chỉ đi chợ.</p><p><strong>Phố Hàng Ngang – Hàng Đào:</strong> Trung tâm thời trang của Hà Nội xưa – nơi buôn bán lụa là gấm vóc từ khắp nơi. Hàng Đào bán vải màu đỏ và hồng (đào), Hàng Ngang bán hàng ngang (vải dệt ngang).</p><p><strong>Thời Pháp thuộc:</strong> Tầng lớp thượng lưu Hà Nội tiếp nhận mode Pháp theo cách riêng – phụ nữ mặc áo dài cổ cao kiểu mới với vải tây, đàn ông mặc sơ mi cà vạt nhưng kết hợp quần ống rộng kiểu Việt.</p><p><strong>Thẩm mỹ lai ghép:</strong> Áo dài vải hoa nhí, giày cao gót, ví da nhỏ – phụ nữ Hà Nội thập niên 1930-40 tạo ra phong cách "Đông-Tây hội tụ" độc đáo, hiện đại mà vẫn giữ hồn Việt.</p>`
   },
   {
-    id: 18, cat: "Trang Phục", emoji: "📿",
-    color: "#8E44AD", bg: "#F5EEF8",
-    title: "Hà Nội Thanh Lịch",
-    author: "Hoàng Đạo Thúy", year: "1984", pages: "200 trang",
-    quick: "Phong cách sống thanh lịch của người Hà Nội",
-    desc: "Ghi chép về chuẩn mực ăn mặc, ứng xử và phong cách sống của người Hà Nội thanh lịch – những giá trị cần được gìn giữ và phát huy.",
-    highlights: ["Chuẩn mực 'thanh lịch' theo từng giai đoạn lịch sử", "Ứng xử xã hội và văn hóa giao tiếp người Hà Nội", "Mặc đẹp không cần đắt tiền – triết lý thẩm mỹ xưa"],
-    content: `<p><strong>Tổng quan:</strong> Hoàng Đạo Thúy – nhà nghiên cứu văn hóa uyên bác, người từng sống qua nhiều thời kỳ lịch sử của Hà Nội – chia sẻ trong cuốn sách này những hiểu biết sâu sắc về chuẩn mực thanh lịch của người Hà Nội.</p>
-    <p><strong>"Thanh lịch" là gì?:</strong> Không phải là đắt tiền hay sang trọng – thanh lịch là sự hài hòa giữa bên ngoài và bên trong. Quần áo sạch sẽ, phẳng phiu, phù hợp với hoàn cảnh; cử chỉ nhẹ nhàng, lời nói chuẩn mực; tâm hồn cao thượng.</p>
-    <p><strong>Mặc theo mùa:</strong> Người Hà Nội xưa biết mặc theo bốn mùa – mùa hè áo lụa mỏng màu nhạt, mùa thu áo nhung ấm màu trầm, mùa đông áo kép nhiều lớp. Không mặc lộn mùa, không mặc quá hở hay quá kín so với thời tiết.</p>
-    <p><strong>Chuẩn mực ứng xử:</strong> Vào nhà người khác bỏ dép ngoài cửa, không hút thuốc trong phòng có phụ nữ và trẻ em, không nói chuyện riêng khi có khách, không cắt lời người lớn – những quy tắc nhỏ tạo nên con người lớn.</p>
-    <p><strong>Ngôn ngữ thanh lịch:</strong> Người Hà Nội gốc không dùng từ tục, không nói quá to, không nói chuyện khi đang ăn. Họ có cách từ chối lịch sự, cách khen ngợi tế nhị và cách phê bình không làm người khác mất mặt.</p>
-    <p><strong>Thanh lịch ngày nay:</strong> Cuốn sách nhẹ nhàng nhắc nhở thế hệ trẻ về những giá trị đang dần bị quên lãng trong xã hội hiện đại vội vàng – thanh lịch không phải là cũ kỹ mà là sự tinh tế vượt thời gian.</p>`
+    id:16, cat:"Trang Phục", emoji:"📿", color:"#8E44AD", bg:"#F5EEF8",
+    title:"Hà Nội Thanh Lịch", author:"Hoàng Đạo Thúy", year:"1984", pages:"200 trang",
+    quick:"Phong cách sống thanh lịch của người Hà Nội",
+    desc:"Ghi chép về chuẩn mực ăn mặc, ứng xử và phong cách sống của người Hà Nội thanh lịch – những giá trị cần được gìn giữ.",
+    highlights:["Chuẩn mực 'thanh lịch' qua các giai đoạn lịch sử","Ứng xử xã hội và văn hóa giao tiếp người Hà Nội","Mặc đẹp không cần đắt tiền – triết lý thẩm mỹ xưa"],
+    content:`<p><strong>"Thanh lịch" là gì?</strong> Không phải là đắt tiền hay sang trọng – thanh lịch là sự hài hòa giữa bên ngoài và bên trong. Quần áo sạch sẽ, phẳng phiu, phù hợp với hoàn cảnh; cử chỉ nhẹ nhàng, lời nói chuẩn mực.</p><p><strong>Mặc theo mùa:</strong> Người Hà Nội xưa biết mặc theo bốn mùa – mùa hè áo lụa mỏng màu nhạt, mùa thu áo nhung ấm màu trầm, mùa đông áo kép nhiều lớp. Không mặc lộn mùa.</p><p><strong>Chuẩn mực ứng xử:</strong> Vào nhà người khác bỏ dép ngoài cửa, không hút thuốc trong phòng có phụ nữ và trẻ em, không nói chuyện riêng khi có khách – những quy tắc nhỏ tạo nên con người lớn.</p><p><strong>Ngôn ngữ thanh lịch:</strong> Người Hà Nội gốc không dùng từ tục, không nói quá to, không nói chuyện khi đang ăn. Họ có cách từ chối lịch sự và cách phê bình không làm người khác mất mặt.</p>`
+  },
+  {
+    id:17, cat:"Trang Phục", emoji:"🎀", color:"#8E44AD", bg:"#F5EEF8",
+    title:"Nếp Cũ – Người Hà Nội", author:"Hoàng Đạo Thúy", year:"1991", pages:"230 trang",
+    quick:"Phong tục và lối sống cổ truyền người Hà Nội",
+    desc:"Ghi chép về những phong tục, nếp sống và nghi lễ truyền thống của người Hà Nội – những điều đã dần mai một theo thời gian.",
+    highlights:["Lễ Tết xưa của người Hà Nội gốc","Đám cưới, đám hỏi với nghi lễ cầu kỳ","Văn hóa trà và tiếp khách người Kinh thành"],
+    content:`<p><strong>Lễ Tết xưa:</strong> Tết của người Hà Nội xưa khác với bây giờ – từ cách dọn nhà, bày mâm ngũ quả đến những kiêng kỵ và phong tục đón giao thừa đặc trưng của người Kinh thành.</p><p><strong>Đám cưới, đám hỏi:</strong> Nghi lễ cưới xin người Hà Nội xưa phức tạp và trang trọng – từ lễ chạm ngõ, lễ ăn hỏi đến đám cưới đều có quy chuẩn riêng, thể hiện sự coi trọng của gia đình.</p><p><strong>Văn hóa trà:</strong> Uống trà là nghệ thuật của người Hà Nội – từ cách chọn trà sen, trà nhài đến cách pha và thưởng thức trong những buổi tiếp khách trang trọng.</p><p><strong>Lời nhắn:</strong> Cuốn sách là tiếng chuông nhắc nhở về những giá trị cần gìn giữ trước làn sóng đô thị hóa và toàn cầu hóa đang xóa nhòa nhiều nét văn hóa đặc sắc.</p>`
   },
 
   // ── V. PHONG TỤC & LỄ HỘI ──
   {
-    id: 19, cat: "Phong Tục & Lễ Hội", emoji: "🎊",
-    color: "#16A085", bg: "#E8F8F5",
-    title: "Hà Nội Văn Hóa Và Phong Tục",
-    author: "Lý Khắc Cung", year: "1999", pages: "340 trang",
-    quick: "Toàn cảnh văn hóa và phong tục Hà Nội",
-    desc: "Cẩm nang đầy đủ về văn hóa, phong tục tập quán của người Hà Nội – từ cách ứng xử hằng ngày đến các lễ hội truyền thống đặc sắc.",
-    highlights: ["Hệ thống tín ngưỡng dân gian Hà Nội", "Phong tục vòng đời: sinh – lấy vợ – lên lão – qua đời", "Lễ Tết và lịch hội hè theo năm"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách là công trình tổng hợp công phu, ghi chép toàn diện về văn hóa và phong tục của người Hà Nội từ xưa đến nay – tài liệu tham khảo quý giá cho nghiên cứu dân tộc học và văn hóa học.</p>
-    <p><strong>Phong tục vòng đời:</strong> Từ lúc sinh ra (lễ đặt tên, đầy cữ, đầy tháng, thôi nôi) đến khi lớn (lễ nhập học, thi cử) đến hôn nhân (dạm ngõ, ăn hỏi, cưới) đến già (lên lão 60, 70, thượng thọ) đến mất (tang ma, giỗ chạp) – mỗi giai đoạn đều có nghi lễ và phong tục riêng.</p>
-    <p><strong>Tết Nguyên Đán Hà Nội:</strong> Tết của người Hà Nội có nhiều nét riêng – cành đào (không phải hoa mai như miền Nam), mâm cỗ phải có bánh chưng vuông, giò lụa, giò xào, nem, xôi gấc. Tục đi lễ chùa đêm Giao thừa và sáng mùng 1 là không thể thiếu.</p>
-    <p><strong>Văn hóa làng trong lòng phố:</strong> Hà Nội mở rộng nhưng bên trong là hàng trăm làng cổ giữ phong tục riêng – làng Ngọc Hà trồng hoa, làng Nghi Tàm nuôi cá vàng, làng Vòng làm cốm. Mỗi làng có đình, có lễ hội, có nghề tổ.</p>
-    <p><strong>Tín ngưỡng thờ Mẫu:</strong> Hà Nội là trung tâm của tín ngưỡng thờ Tứ Phủ – Phủ Giầy (Nam Định), Phủ Tây Hồ (Hà Nội) và nhiều điện thờ Mẫu nhỏ trong các ngõ phố. Hầu đồng là nghi lễ trung tâm, kết hợp âm nhạc, trang phục và xuất thần độc đáo.</p>
-    <p><strong>Hội làng theo lịch âm:</strong> Mỗi tháng âm lịch đều có hội làng – từ hội làng Kim Liên (tháng 3) đến hội đền Quán Thánh (tháng 3), hội Gióng (mùng 6 tháng 4). Người Hà Nội biết cả lịch hội như biết lịch thời tiết.</p>`
+    id:18, cat:"Phong Tục & Lễ Hội", emoji:"🎊", color:"#16A085", bg:"#E8F8F5",
+    title:"Hà Nội Văn Hóa Và Phong Tục", author:"Lý Khắc Cung", year:"1999", pages:"340 trang",
+    quick:"Toàn cảnh văn hóa và phong tục Hà Nội",
+    desc:"Cẩm nang đầy đủ về văn hóa, phong tục tập quán của người Hà Nội – từ ứng xử hằng ngày đến các lễ hội truyền thống.",
+    highlights:["Hệ thống tín ngưỡng dân gian Hà Nội","Phong tục vòng đời: sinh – cưới – lên lão – qua đời","Lễ Tết và lịch hội hè theo năm"],
+    content:`<p><strong>Phong tục vòng đời:</strong> Từ lúc sinh ra (lễ đặt tên, đầy tháng, thôi nôi) đến lớn (lễ nhập học) đến hôn nhân (dạm ngõ, ăn hỏi, cưới) đến già (lên lão 60, 70) đến mất (tang ma, giỗ chạp) – mỗi giai đoạn có nghi lễ riêng.</p><p><strong>Tết Nguyên Đán Hà Nội:</strong> Cành đào, mâm cỗ phải có bánh chưng vuông, giò lụa, giò xào, nem, xôi gấc. Tục đi lễ chùa đêm Giao thừa và sáng mùng 1 là không thể thiếu.</p><p><strong>Văn hóa làng trong lòng phố:</strong> Hà Nội mở rộng nhưng bên trong là hàng trăm làng cổ giữ phong tục riêng – làng Ngọc Hà trồng hoa, làng Nghi Tàm nuôi cá vàng, làng Vòng làm cốm.</p><p><strong>Tín ngưỡng thờ Mẫu:</strong> Hà Nội là trung tâm của tín ngưỡng thờ Tứ Phủ – Phủ Tây Hồ và nhiều điện thờ Mẫu nhỏ trong các ngõ phố. Hầu đồng kết hợp âm nhạc, trang phục và xuất thần độc đáo.</p>`
   },
   {
-    id: 20, cat: "Phong Tục & Lễ Hội", emoji: "🏮",
-    color: "#16A085", bg: "#E8F8F5",
-    title: "Lễ Hội Cổ Truyền Thăng Long – Hà Nội",
-    author: "Đinh Gia Khánh", year: "2003", pages: "420 trang",
-    quick: "Bách khoa về lễ hội cổ truyền của kinh đô",
-    desc: "Ghi chép chi tiết về hơn 100 lễ hội dân gian của vùng đất Thăng Long – nguồn gốc, nghi thức, ý nghĩa và cách thức tổ chức.",
-    highlights: ["Hội Gióng – Di sản UNESCO", "Lễ hội chùa Hương – hội xuân lớn nhất miền Bắc", "Tứ trấn Thăng Long và lễ hội các đền"],
-    content: `<p><strong>Tổng quan:</strong> Cuốn sách ghi chép công phu hơn 100 lễ hội truyền thống của vùng Thăng Long – Hà Nội, từ những lễ hội lớn được tổ chức hằng năm đến những lễ hội nhỏ gắn với từng làng xã.</p>
-    <p><strong>Hội Gióng – Di sản UNESCO:</strong> Tổ chức tại đền Sóc (Sóc Sơn) và đền Phù Đổng (Gia Lâm) vào mùng 6 tháng 4 âm lịch. Hội tái hiện trận đánh của Thánh Gióng chống giặc Ân qua màn trình diễn nghệ thuật phức tạp với hàng trăm diễn viên và đạo cụ. UNESCO công nhận năm 2010 là di sản văn hóa phi vật thể nhân loại.</p>
-    <p><strong>Lễ hội chùa Hương:</strong> Kéo dài từ mùng 6 tháng giêng đến tháng 3 âm lịch – dài nhất trong các lễ hội Việt Nam. Du khách đi đò trên suối Yến vào rừng, leo núi lên hang Hương Tích. Kết hợp tín ngưỡng Phật giáo và du xuân, thu hút hơn 1 triệu người mỗi năm.</p>
-    <p><strong>Tứ trấn Thăng Long:</strong> Bốn đền bảo vệ bốn phương thành Thăng Long đều có lễ hội riêng: Đền Bạch Mã (phố Hàng Buồm) – lễ tháng 2 âm lịch; Đền Voi Phục (Thủ Lệ) – lễ tháng 9; Đền Kim Liên (Kim Liên) – lễ tháng 3; Đền Quán Thánh (Cổng Tây) – lễ tháng 3.</p>
-    <p><strong>Hội làng Đường Lâm:</strong> Làng cổ duy nhất còn nguyên vẹn của vùng Hà Nội – với những ngôi nhà đá ong nghìn năm tuổi, hội làng tháng 2 âm lịch giữ nguyên nghi thức từ thế kỷ 17-18.</p>
-    <p><strong>Nghi thức và ý nghĩa:</strong> Sách mô tả chi tiết các nghi thức tế lễ, rước kiệu, hát quan họ, hát chèo – và phân tích ý nghĩa xã hội và tâm linh của từng nghi thức trong đời sống cộng đồng.</p>`
+    id:19, cat:"Phong Tục & Lễ Hội", emoji:"🏮", color:"#16A085", bg:"#E8F8F5",
+    title:"Lễ Hội Cổ Truyền Thăng Long – Hà Nội", author:"Đinh Gia Khánh", year:"2003", pages:"420 trang",
+    quick:"Bách khoa về lễ hội cổ truyền của kinh đô",
+    desc:"Ghi chép chi tiết về hơn 100 lễ hội dân gian của vùng Thăng Long – nguồn gốc, nghi thức, ý nghĩa và cách thức tổ chức.",
+    highlights:["Hội Gióng – Di sản UNESCO 2010","Lễ hội chùa Hương – hội xuân lớn nhất miền Bắc","Tứ trấn Thăng Long và lễ hội các đền"],
+    content:`<p><strong>Hội Gióng – Di sản UNESCO:</strong> Tổ chức tại đền Sóc (Sóc Sơn) và đền Phù Đổng (Gia Lâm) vào mùng 6 tháng 4 âm lịch. Hội tái hiện trận đánh của Thánh Gióng qua màn trình diễn nghệ thuật phức tạp. UNESCO công nhận năm 2010.</p><p><strong>Lễ hội chùa Hương:</strong> Kéo dài từ mùng 6 tháng giêng đến tháng 3 âm lịch – dài nhất trong các lễ hội Việt Nam. Du khách đi đò trên suối Yến vào rừng, leo núi lên hang Hương Tích. Thu hút hơn 1 triệu người mỗi năm.</p><p><strong>Tứ trấn Thăng Long:</strong> Bốn đền bảo vệ bốn phương thành Thăng Long – Đền Bạch Mã (đông), Đền Voi Phục (tây), Đền Kim Liên (nam), Đền Quán Thánh (bắc) – đều có lễ hội riêng mỗi năm.</p><p><strong>Nghi thức và ý nghĩa:</strong> Sách mô tả chi tiết các nghi thức tế lễ, rước kiệu, hát quan họ, hát chèo và phân tích ý nghĩa xã hội và tâm linh.</p>`
   },
   {
-    id: 21, cat: "Phong Tục & Lễ Hội", emoji: "🎋",
-    color: "#16A085", bg: "#E8F8F5",
-    title: "Tín Ngưỡng Văn Hóa Việt Nam",
-    author: "Ngô Đức Thịnh", year: "2001", pages: "380 trang",
-    quick: "Khám phá thế giới tâm linh người Việt",
-    desc: "Nghiên cứu toàn diện về hệ thống tín ngưỡng dân gian của người Việt – từ thờ thần, thờ Mẫu đến những tục lệ độc đáo gắn với đời sống hằng ngày.",
-    highlights: ["Tín ngưỡng thờ Mẫu – Di sản UNESCO 2016", "Hệ thống thần linh trong tín ngưỡng Việt", "Mối quan hệ giữa tín ngưỡng và đời sống xã hội"],
-    content: `<p><strong>Tổng quan:</strong> Tín ngưỡng dân gian là một phần không thể tách rời của đời sống người Việt – từ bàn thờ tổ tiên trong mỗi gia đình đến những ngôi đền, ngôi chùa trên từng con phố Hà Nội.</p>
-    <p><strong>Thờ cúng tổ tiên:</strong> Nền tảng của tín ngưỡng Việt – bàn thờ trong mỗi nhà là cầu nối giữa người sống và người mất. Nghi thức thắp hương, lễ vật, và cúng giỗ đều mang ý nghĩa triết học sâu xa về sự tiếp nối của sự sống.</p>
-    <p><strong>Thờ Mẫu – Di sản UNESCO 2016:</strong> Tín ngưỡng thờ Tứ Phủ (Mẫu Đệ Nhất – Thiên, Mẫu Đệ Nhị – Địa, Mẫu Đệ Tam – Thủy, Mẫu Đệ Tứ – Nhạc) là tín ngưỡng bản địa thuần Việt, phát triển mạnh từ thế kỷ 16-17. Hầu đồng là nghi lễ trung tâm với âm nhạc chầu văn, trang phục sặc sỡ và trạng thái xuất thần.</p>
-    <p><strong>Tứ trấn Thăng Long:</strong> Bốn ngôi đền thiêng bảo vệ bốn phương thành Thăng Long với những câu chuyện huyền thoại hấp dẫn về các vị thần: Bạch Mã (bạch mã dẫn đường xây thành), Voi Phục (Linh Lang Đại Vương), Kim Liên (Cao Sơn Đại Vương), Quán Thánh (Huyền Thiên Trấn Vũ).</p>
-    <p><strong>Thần Thành Hoàng:</strong> Mỗi làng xã quanh Hà Nội đều thờ thần thành hoàng riêng – có thể là nhân vật lịch sử, anh hùng dân tộc, hoặc thần tự nhiên. Hơn 1.000 làng quanh Hà Nội có hơn 1.000 vị thành hoàng khác nhau – phản ánh sự đa dạng văn hóa phi thường.</p>
-    <p><strong>Phật giáo – Nho giáo – Đạo giáo:</strong> Ba tôn giáo này hòa quyện với tín ngưỡng bản địa tạo nên "tam giáo đồng nguyên" đặc trưng Việt – không cứng nhắc theo giáo lý nào mà linh hoạt theo hoàn cảnh và nhu cầu tâm linh.</p>`
+    id:20, cat:"Phong Tục & Lễ Hội", emoji:"🎋", color:"#16A085", bg:"#E8F8F5",
+    title:"Tín Ngưỡng Văn Hóa Việt Nam", author:"Ngô Đức Thịnh", year:"2001", pages:"380 trang",
+    quick:"Khám phá thế giới tâm linh người Việt",
+    desc:"Nghiên cứu toàn diện về hệ thống tín ngưỡng dân gian của người Việt – từ thờ thần, thờ Mẫu đến những tục lệ độc đáo gắn với đời sống hằng ngày.",
+    highlights:["Tín ngưỡng thờ Mẫu – Di sản UNESCO 2016","Hệ thống thần linh trong tín ngưỡng Việt","Tam giáo đồng nguyên đặc trưng Việt Nam"],
+    content:`<p><strong>Thờ cúng tổ tiên:</strong> Nền tảng của tín ngưỡng Việt – bàn thờ trong mỗi nhà là cầu nối giữa người sống và người mất. Nghi thức thắp hương, lễ vật và cúng giỗ đều mang ý nghĩa triết học sâu xa về sự tiếp nối.</p><p><strong>Thờ Mẫu – Di sản UNESCO 2016:</strong> Tín ngưỡng thờ Tứ Phủ là tín ngưỡng bản địa thuần Việt, phát triển mạnh từ thế kỷ 16-17. Hầu đồng là nghi lễ trung tâm với âm nhạc chầu văn, trang phục sặc sỡ và trạng thái xuất thần.</p><p><strong>Tứ trấn Thăng Long:</strong> Bốn đền thiêng với câu chuyện huyền thoại về các vị thần: Bạch Mã (bạch mã dẫn đường xây thành), Voi Phục (Linh Lang Đại Vương), Kim Liên (Cao Sơn Đại Vương), Quán Thánh (Huyền Thiên Trấn Vũ).</p><p><strong>Tam giáo đồng nguyên:</strong> Phật giáo, Nho giáo, Đạo giáo hòa quyện với tín ngưỡng bản địa – không cứng nhắc theo giáo lý nào mà linh hoạt theo nhu cầu tâm linh.</p>`
   },
   {
-    id: 22, cat: "Phong Tục & Lễ Hội", emoji: "🌺",
-    color: "#16A085", bg: "#E8F8F5",
-    title: "Lễ Hội Dân Gian Hà Nội",
-    author: "Nhiều tác giả", year: "2008", pages: "300 trang",
-    quick: "Không khí lễ hội đặc sắc của thủ đô",
-    desc: "Ghi chép sống động về không khí lễ hội dân gian Hà Nội – từ chuẩn bị đến diễn ra, tất cả được khắc họa qua lăng kính của người trong cuộc.",
-    highlights: ["Trò chơi dân gian phục hồi trong lễ hội", "Âm nhạc và nghệ thuật: quan họ, chèo, múa rồng", "Những biến tướng của lễ hội hiện đại"],
-    content: `<p><strong>Tổng quan:</strong> Khác với phương pháp học thuật, cuốn sách này tiếp cận lễ hội dân gian qua góc nhìn của người tham dự – cảm xúc, không khí và những khoảnh khắc đáng nhớ trong từng lễ hội.</p>
-    <p><strong>Mùa lễ hội xuân:</strong> Tháng giêng là "tháng ăn chơi" theo quan niệm người Việt. Từ mùng 6 (hội Gióng) đến qua tháng 3 (chùa Hương) – cả mùa xuân Hà Nội là chuỗi lễ hội liên tiếp, mỗi lễ hội mang không khí riêng.</p>
-    <p><strong>Trò chơi dân gian phục hồi:</strong> Đấu vật (Hội vật làng Liễu Đôi), chơi ô ăn quan, thả diều (bãi sông Hồng), kéo co (nhiều hình thức khác nhau theo vùng), chọi gà, chọi trâu – những trò chơi đang được phục hồi sau nhiều thập kỷ bị quên lãng thời chiến tranh và bao cấp.</p>
-    <p><strong>Âm nhạc lễ hội:</strong> Hát quan họ (Bắc Ninh nhưng rất phổ biến ở Hà Nội), hát chèo (các sân đình làng Hà Nội), múa rồng, múa lân, múa sư tử – mỗi loại hình có không gian và dịp trình diễn riêng trong hệ thống lễ hội.</p>
-    <p><strong>Những vấn đề hiện đại:</strong> Sách thẳng thắn nhìn nhận những biến tướng: chen lấn, xô đẩy, thương mại hóa (bán hàng rong, chèo kéo khách), mất đi ý nghĩa tâm linh ban đầu khi lễ hội trở thành "sự kiện du lịch". Đây là thách thức cần giải quyết để bảo tồn văn hóa thật sự.</p>
-    <p><strong>Tiếng gọi bảo tồn:</strong> Các tác giả đề xuất mô hình bảo tồn lễ hội dựa vào cộng đồng – người làng tự tổ chức, nhà nước hỗ trợ nhưng không can thiệp quá sâu vào nội dung truyền thống.</p>`
+    id:21, cat:"Phong Tục & Lễ Hội", emoji:"🌺", color:"#16A085", bg:"#E8F8F5",
+    title:"Lễ Hội Dân Gian Hà Nội", author:"Nhiều tác giả", year:"2008", pages:"300 trang",
+    quick:"Không khí lễ hội đặc sắc của thủ đô",
+    desc:"Ghi chép sống động về không khí lễ hội dân gian Hà Nội – từ chuẩn bị đến diễn ra, qua lăng kính của người trong cuộc.",
+    highlights:["Trò chơi dân gian phục hồi trong lễ hội","Âm nhạc và nghệ thuật: quan họ, chèo, múa rồng","Những biến tướng của lễ hội hiện đại"],
+    content:`<p><strong>Mùa lễ hội xuân:</strong> Tháng giêng là "tháng ăn chơi". Từ mùng 6 (hội Gióng) đến tháng 3 (chùa Hương) – cả mùa xuân Hà Nội là chuỗi lễ hội liên tiếp, mỗi lễ hội mang không khí riêng.</p><p><strong>Trò chơi dân gian phục hồi:</strong> Đấu vật, chơi ô ăn quan, thả diều (bãi sông Hồng), kéo co, chọi gà – những trò chơi đang được phục hồi sau nhiều thập kỷ bị quên lãng thời chiến tranh và bao cấp.</p><p><strong>Âm nhạc lễ hội:</strong> Hát quan họ (Bắc Ninh nhưng rất phổ biến ở Hà Nội), hát chèo tại các sân đình, múa rồng, múa lân, múa sư tử – mỗi loại hình có không gian và dịp trình diễn riêng.</p><p><strong>Biến tướng hiện đại:</strong> Sách thẳng thắn nhìn nhận: chen lấn, xô đẩy, thương mại hóa, mất đi ý nghĩa tâm linh ban đầu khi lễ hội trở thành "sự kiện du lịch". Đây là thách thức cần giải quyết để bảo tồn văn hóa thật sự.</p>`
+  },
+  {
+    id:22, cat:"Phong Tục & Lễ Hội", emoji:"🎐", color:"#16A085", bg:"#E8F8F5",
+    title:"Văn Hóa Dân Gian Thăng Long – Hà Nội", author:"Nhiều tác giả", year:"2010", pages:"350 trang",
+    quick:"Tổng hợp văn hóa dân gian kinh đô",
+    desc:"Nghiên cứu toàn diện về kho tàng văn hóa dân gian của vùng đất Thăng Long – từ ca dao, tục ngữ đến truyền thuyết và nghề thủ công.",
+    highlights:["Ca dao, tục ngữ đặc trưng người Hà Nội","Truyền thuyết và huyền thoại về Thăng Long","Nghề thủ công và làng nghề trong văn hóa dân gian"],
+    content:`<p><strong>Ca dao người Hà Nội:</strong> "Gió đưa cành trúc la đà / Tiếng chuông Trấn Vũ canh gà Thọ Xương / Mịt mù khói tỏa ngàn sương / Nhịp chày Yên Thái mặt gương Tây Hồ" – bức tranh Hà Nội bình minh trong ca dao bất hủ.</p><p><strong>Truyền thuyết Thăng Long:</strong> Hồ Tây – nơi Lạc Long Quân đánh hồ chín đuôi; Hồ Hoàn Kiếm – nơi vua Lê Lợi trả gươm thần cho Rùa Vàng; đền Bạch Mã – nơi con ngựa trắng hiện ra dẫn đường xây thành... Những truyền thuyết này tạo nên linh hồn thiêng liêng của Hà Nội.</p><p><strong>Nghề thủ công dân gian:</strong> Mỗi làng nghề gắn với một câu chuyện về vị tổ nghề – ông tổ nghề gốm Bát Tràng, ông tổ nghề lụa Vạn Phúc, ông tổ nghề tranh Hàng Trống. Những câu chuyện này truyền cảm hứng qua nhiều thế hệ nghệ nhân.</p><p><strong>Hát ru và dân ca:</strong> Hát ru Bắc Bộ với giai điệu trầm buồn, hát trống quân trong lễ hội, hát đối đáp trong các phiên chợ – kho tàng âm nhạc dân gian phong phú đang cần được bảo tồn.</p>`
   }
 ];
 
-const CATS = ["Tất cả", "Lịch Sử", "Văn Hóa", "Ẩm Thực", "Trang Phục", "Phong Tục & Lễ Hội"];
+// ══════════════════════════════════════════════
+//  KHỞI TẠO
+// ══════════════════════════════════════════════
+const CATS = ["Tất cả","Lịch Sử","Văn Hóa","Ẩm Thực","Trang Phục","Phong Tục & Lễ Hội"];
 let currentCat = "Tất cả";
 let currentBook = null;
 let favorites = JSON.parse(localStorage.getItem('favs_hn') || '[]');
-let isPlaying = false;
-let demoInterval = null;
+let currentTrack = null;
+let audioEl = null;
+let siteQrDone = false;
 
-// BUILD TABS
+// Build category tabs
 const tabsEl = document.getElementById('catTabs');
 CATS.forEach(cat => {
   const btn = document.createElement('button');
   btn.className = 'cat-tab' + (cat === 'Tất cả' ? ' active' : '');
   btn.textContent = cat;
-  btn.onclick = () => setCategory(cat);
+  btn.onclick = () => { currentCat = cat; document.querySelectorAll('.cat-tab').forEach(b => b.classList.toggle('active', b.textContent === cat)); renderBooks(); };
   tabsEl.appendChild(btn);
 });
 
-function setCategory(cat) {
-  currentCat = cat;
-  document.querySelectorAll('.cat-tab').forEach(b => {
-    b.classList.toggle('active', b.textContent === cat);
-  });
-  renderBooks();
-}
+// Build music selector buttons
+const msEl = document.getElementById('musicSelector');
+MUSIC_TRACKS.forEach(t => {
+  const btn = document.createElement('button');
+  btn.className = 'music-btn';
+  btn.textContent = t.label;
+  btn.onclick = () => selectTrack(t, btn);
+  msEl.appendChild(btn);
+});
 
+audioEl = document.getElementById('audioEl');
+audioEl.addEventListener('timeupdate', updateAudioProgress);
+audioEl.addEventListener('ended', () => {
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('audioTime').textContent = '-- Đã kết thúc --';
+});
+audioEl.addEventListener('error', () => {
+  document.getElementById('audioTime').textContent = '⚠️ Không tải được nhạc – thử bản khác';
+});
+
+// ══════════════════════════════════════════════
+//  RENDER SÁCH
+// ══════════════════════════════════════════════
 function renderBooks() {
-  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
   let books = BOOKS;
   if (currentCat !== 'Tất cả') books = books.filter(b => b.cat === currentCat);
-  if (query) books = books.filter(b =>
-    b.title.toLowerCase().includes(query) ||
-    b.desc.toLowerCase().includes(query) ||
-    (b.author && b.author.toLowerCase().includes(query))
-  );
+  if (q) books = books.filter(b => b.title.toLowerCase().includes(q) || b.desc.toLowerCase().includes(q) || (b.author||'').toLowerCase().includes(q));
 
   document.getElementById('sectionTitle').textContent = currentCat === 'Tất cả' ? 'Tất cả sách' : currentCat;
   document.getElementById('bookCount').textContent = books.length + ' cuốn';
 
   const list = document.getElementById('bookList');
   const empty = document.getElementById('emptyState');
-div>
-</div>
-/div>
-div>
-stopPropagation();toggleFav(${b.id},this)">
-;
-  localStorage.setItem('favs_hn', JSON.stringify(favorites));
-  if (currentBook && currentBook.id === id) updateFavModalBtn();
+  if (!books.length) { list.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+
+  list.innerHTML = books.map(b => `
+    <div class="book-card" onclick="openBook(${b.id})">
+      <div class="book-cover" style="background:${b.bg};color:${b.color}">${b.emoji}</div>
+      <div class="book-info">
+        <div class="book-cat">${b.cat}</div>
+        <div class="book-title">${b.title}</div>
+        <div class="book-desc">${b.desc}</div>
+        <div class="book-meta">
+          <span class="audio-badge">🎵 Nhạc nền</span>
+          <button class="fav-btn ${favorites.includes(b.id)?'active':''}" onclick="event.stopPropagation();toggleFav(${b.id},this)">${favorites.includes(b.id)?'❤️':'🤍'}</button>
+        </div>
+      </div>
+    </div>`).join('');
 }
 
-let qrInstance = null;
+// ══════════════════════════════════════════════
+//  NHẠC NỀN
+// ══════════════════════════════════════════════
+function selectTrack(track, btn) {
+  currentTrack = track;
+  document.querySelectorAll('.music-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('nowPlaying').textContent = '♫ ' + track.name;
+  audioEl.src = track.url;
+  audioEl.load();
+  audioEl.play().then(() => {
+    document.getElementById('playBtn').textContent = '⏸';
+    document.getElementById('audioTime').textContent = 'Đang phát...';
+  }).catch(() => {
+    document.getElementById('audioTime').textContent = '⚠️ Click ▶ để phát (trình duyệt chặn autoplay)';
+    document.getElementById('playBtn').textContent = '▶';
+  });
+}
 
+function togglePlay() {
+  if (!currentTrack) {
+    // Auto-select first track if none chosen
+    selectTrack(MUSIC_TRACKS[0], document.querySelectorAll('.music-btn')[0]);
+    return;
+  }
+  if (audioEl.paused) {
+    audioEl.play();
+    document.getElementById('playBtn').textContent = '⏸';
+  } else {
+    audioEl.pause();
+    document.getElementById('playBtn').textContent = '▶';
+  }
+}
+
+function updateAudioProgress() {
+  if (!audioEl.duration) return;
+  const pct = (audioEl.currentTime / audioEl.duration) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('audioTime').textContent = formatTime(audioEl.currentTime) + ' / ' + formatTime(audioEl.duration);
+}
+
+function seekAudio(e) {
+  if (!audioEl.duration) return;
+  const bar = document.getElementById('audioProgressBar');
+  const pct = e.offsetX / bar.offsetWidth;
+  audioEl.currentTime = pct * audioEl.duration;
+}
+
+function formatTime(s) {
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+
+// ══════════════════════════════════════════════
+//  QR TRANG WEB (TRANG CHỦ)
+// ══════════════════════════════════════════════
+function openSiteQR() {
+  document.getElementById('siteQrOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (!siteQrDone) {
+    const siteUrl = window.location.href.split('?')[0].split('#')[0];
+    document.getElementById('siteQrUrl').textContent = siteUrl;
+    new QRCode(document.getElementById('siteQrBox'), {
+      text: siteUrl, width:180, height:180,
+      colorDark:'#1A1A1A', colorLight:'#FAFAF8',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    siteQrDone = true;
+  }
+}
+function closeSiteQR(e) { if(e.target===document.getElementById('siteQrOverlay')) closeSiteQRBtn(); }
+function closeSiteQRBtn() { document.getElementById('siteQrOverlay').classList.remove('open'); document.body.style.overflow=''; }
+
+// ══════════════════════════════════════════════
+//  MỞ / ĐÓNG MODAL SÁCH
+// ══════════════════════════════════════════════
 function openBook(id) {
-  currentBook = BOOKS.find(b => b.id === id);
+  currentBook = BOOKS.find(b => b.id===id);
   if (!currentBook) return;
   const b = currentBook;
-
   document.getElementById('mCat').textContent = b.cat;
   document.getElementById('mTitle').textContent = b.title;
   document.getElementById('mCover').style.cssText = `background:${b.bg};color:${b.color};font-size:36px`;
   document.getElementById('mCover').textContent = b.emoji;
   document.getElementById('mQuick').textContent = b.quick;
 
-  // Meta tags
-  const metaEl = document.getElementById('mMeta');
-  metaEl.innerHTML = '';
-  if (b.author) metaEl.innerHTML += `<span class="meta-tag">✍️ ${b.author}</span>`;
-  if (b.year) metaEl.innerHTML += `<span class="meta-tag">📅 ${b.year}</span>`;
-  if (b.pages) metaEl.innerHTML += `<span class="meta-tag">📄 ${b.pages}</span>`;
+  // Meta
+  const meta = document.getElementById('mMeta');
+  meta.innerHTML = (b.author?`<span class="meta-tag">✍️ ${b.author}</span>`:'')+
+    (b.year?`<span class="meta-tag">📅 ${b.year}</span>`:'')+
+    (b.pages?`<span class="meta-tag">📄 ${b.pages}</span>`:'');
 
   // Highlights
-  const hlEl = document.getElementById('mHighlights');
-  if (b.highlights && b.highlights.length) {
-    hlEl.innerHTML = `<div class="highlights-box">
-      <div class="hl-title">⭐ Điểm nổi bật</div>
-      <ul>${b.highlights.map(h => `<li>${h}</li>`).join('')}</ul>
-    </div>`;
-  } else {
-    hlEl.innerHTML = '';
-  }
+  const hl = document.getElementById('mHighlights');
+  hl.innerHTML = b.highlights?.length ? `<div class="highlights-box"><div class="hl-title">⭐ Điểm nổi bật</div><ul>${b.highlights.map(h=>`<li>${h}</li>`).join('')}</ul></div>` : '';
 
   document.getElementById('mContent').innerHTML = b.content;
   updateFavModalBtn();
 
-  // Audio reset
-  isPlaying = false;
-  clearInterval(demoInterval);
-  document.getElementById('playBtn').textContent = '▶';
-  document.getElementById('progressFill').style.width = '0%';
-  document.getElementById('audioTime').textContent = 'Chạm ▶ để nghe thử';
+  // Reset audio state (giữ nhạc đang phát)
+  document.getElementById('playBtn').textContent = audioEl && !audioEl.paused ? '⏸' : '▶';
 
-  // QR Code
-  generateQR(b);
+  // QR từng sách
+  generateBookQR(b);
 
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function generateQR(book) {
+function generateBookQR(book) {
   const qrContainer = document.getElementById('qrContainer');
   qrContainer.innerHTML = '';
-
-  // URL = trang web hiện tại + hash book id
-  const url = window.location.href.split('#')[0] + '#book-' + book.id;
-  document.getElementById('qrUrl').textContent = url.length > 50 ? url.substring(0, 47) + '...' : url;
-
+  const url = window.location.href.split('?')[0].split('#')[0] + '?book=' + book.id;
+  document.getElementById('qrUrl').textContent = url.length > 55 ? url.substring(0,52)+'...' : url;
   try {
     new QRCode(qrContainer, {
-      text: url,
-      width: 72,
-      height: 72,
-      colorDark: '#1A1A1A',
-      colorLight: '#ffffff',
+      text: url, width:72, height:72,
+      colorDark:'#1A1A1A', colorLight:'#ffffff',
       correctLevel: QRCode.CorrectLevel.M
     });
   } catch(e) {
-    qrContainer.innerHTML = '<div style="font-size:10px;color:#888;text-align:center;padding:4px;">QR<br>Code</div>';
+    qrContainer.innerHTML = '<div style="font-size:9px;color:#888;text-align:center">QR</div>';
   }
 }
 
 function updateFavModalBtn() {
-  const btn = document.getElementById('favModalBtn');
   const isFav = favorites.includes(currentBook.id);
+  const btn = document.getElementById('favModalBtn');
   btn.textContent = isFav ? '❤️ Đã yêu thích' : '🤍 Yêu thích';
   btn.classList.toggle('fav-active', isFav);
 }
 
+function toggleFav(id, btn) {
+  if (favorites.includes(id)) { favorites = favorites.filter(f=>f!==id); btn.textContent='🤍'; btn.classList.remove('active'); }
+  else { favorites.push(id); btn.textContent='❤️'; btn.classList.add('active'); }
+  localStorage.setItem('favs_hn', JSON.stringify(favorites));
+  if (currentBook?.id === id) updateFavModalBtn();
+}
+
 function toggleFavModal() {
   if (!currentBook) return;
-  if (favorites.includes(currentBook.id)) {
-    favorites = favorites.filter(f => f !== currentBook.id);
-  } else {
-    favorites.push(currentBook.id);
-  }
+  if (favorites.includes(currentBook.id)) favorites = favorites.filter(f=>f!==currentBook.id);
+  else favorites.push(currentBook.id);
   localStorage.setItem('favs_hn', JSON.stringify(favorites));
   updateFavModalBtn();
   renderBooks();
 }
 
-function togglePlay() {
-  if (!isPlaying) {
-    isPlaying = true;
-    document.getElementById('playBtn').textContent = '⏸';
-    document.getElementById('audioTime').textContent = 'Đang phát demo...';
-    let pct = 0;
-    demoInterval = setInterval(() => {
-      pct += 0.5;
-      document.getElementById('progressFill').style.width = pct + '%';
-      const mins = Math.floor(pct / 100 * 120);
-      const secs = Math.floor((pct / 100 * 7200) % 60);
-      document.getElementById('audioTime').textContent =
-        `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')} / 120:00 (demo)`;
-      if (pct >= 100) {
-        clearInterval(demoInterval);
-        isPlaying = false;
-        document.getElementById('playBtn').textContent = '▶';
-        document.getElementById('audioTime').textContent = 'Đã kết thúc demo';
-      }
-    }, 100);
-  } else {
-    isPlaying = false;
-    clearInterval(demoInterval);
-    document.getElementById('playBtn').textContent = '▶';
-    document.getElementById('audioTime').textContent = 'Tạm dừng';
-  }
-}
-
-function closeModal(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModalBtn();
-}
+function closeModal(e) { if(e.target===document.getElementById('modalOverlay')) closeModalBtn(); }
 function closeModalBtn() {
   document.getElementById('modalOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  isPlaying = false;
-  clearInterval(demoInterval);
 }
 
 function shareBook() {
   if (!currentBook) return;
-  const url = window.location.href.split('#')[0] + '#book-' + currentBook.id;
-  if (navigator.share) {
-    navigator.share({ title: currentBook.title, text: currentBook.quick, url: url });
-  } else {
-    navigator.clipboard.writeText(url).then(() => alert('✅ Đã sao chép link!'));
-  }
+  const url = window.location.href.split('?')[0].split('#')[0] + '?book=' + currentBook.id;
+  if (navigator.share) navigator.share({ title:currentBook.title, text:currentBook.quick, url });
+  else navigator.clipboard.writeText(url).then(()=>alert('✅ Đã sao chép link!'));
 }
 
 document.getElementById('searchInput').addEventListener('input', renderBooks);
